@@ -33,6 +33,13 @@ Read README.md and docs/PROGRESS.md before proposing the next task. Read docs/SE
 - When SQLite is added, store case creation with its initial event atomically; also store each status update with its event in one transaction.
 - Use parameterized SQL. Test database behavior with temporary databases.
 
+## Public documentation style
+
+- Keep the public README and repository description focused on the product: purpose, behavior, workflow, setup, implementation status, and roadmap.
+- Do not prominently label FlowDesk as "proyek belajar Python", a tutorial, a curriculum, or a career-development exercise in public-facing introductory text.
+- Keep mentoring preferences and session context in the supporting instructions and progress notes. The README should introduce the software.
+- Use other projects only as presentation references; do not copy their wording, accomplishments, complexity, or feature claims. Keep planned capabilities clearly distinguished from implemented ones.
+
 ## Environment, version control, and public content
 
 - Use the project's .venv Python explicitly until activation is understood. Do not assume a bare python command selects the intended interpreter.

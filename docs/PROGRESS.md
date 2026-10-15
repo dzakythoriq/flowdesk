@@ -60,7 +60,7 @@ Pembahasan konsep bukan bukti bahwa seluruh topik telah dikuasai. Lanjutkan deng
 
 Menyiapkan README, AGENTS.md, panduan setup, catatan progres, dan .gitignore. Menyiapkan Git lokal serta publikasi dokumentasi ke repository GitHub public yang diminta.
 
-Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore -v .venv/Scripts/python.exe` menunjukkan bahwa `.venv` dikecualikan oleh .gitignore. Commit fondasi telah dibuat: `be73004` dengan pesan `docs: establish FlowDesk setup and learning workflow`. Setelah commit tersebut, working tree bersih. Pemeriksaan staged diff tidak menemukan masalah whitespace; empat dokumen Markdown diperiksa dan tidak ada tautan lokal yang rusak. Daftar tracked files hanya berisi lima berkas dokumentasi dan .gitignore; environment tidak ikut tersimpan. Akun GitHub terhubung adalah `dzakythoriq`; repository remote `flowdesk` belum tersedia melalui koneksi pada saat pemeriksaan. Publikasi belum dilakukan. Gunakan `git log --oneline -5` untuk membaca commit aktual, dan jangan menganggap commit lokal otomatis sudah ada di GitHub.
+Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore -v .venv/Scripts/python.exe` menunjukkan bahwa `.venv` dikecualikan oleh .gitignore. Commit fondasi telah dibuat: `be73004` dengan pesan `docs: establish FlowDesk setup and learning workflow`. Setelah commit tersebut, working tree bersih. Pemeriksaan staged diff tidak menemukan masalah whitespace; empat dokumen Markdown diperiksa dan tidak ada tautan lokal yang rusak. Daftar tracked files hanya berisi empat dokumen Markdown dan .gitignore; environment tidak ikut tersimpan. Akun GitHub terhubung adalah `dzakythoriq`; repository remote `flowdesk` belum tersedia melalui koneksi pada saat pemeriksaan. Publikasi belum dilakukan. Gunakan `git log --oneline -5` untuk membaca commit aktual, dan jangan menganggap commit lokal otomatis sudah ada di GitHub.
 
 ## Langkah belajar berikutnya
 
@@ -80,3 +80,15 @@ Belum membuat file latihan atau fungsi aplikasi pada milestone dokumentasi ini. 
 - Tidak ada tes aplikasi yang dapat dijalankan karena kode aplikasinya belum tersedia.
 - Database, API, pytest, dan Postman belum menjadi bagian dari implementasi.
 - Setup menggunakan interpreter environment secara eksplisit. Aktivasi terminal belum diperlukan untuk menjalankan pemeriksaan.
+
+## Revisi presentasi repository, 15 Oktober 2026
+
+Permintaan: README public harus menonjolkan produk dan perilaku teknis, tanpa menjadikan label "proyek belajar Python" atau kurikulum sebagai pengantar utama. Gaya pendampingan dan proses belajar tetap berlaku pada sesi pengembangan.
+
+Referensi yang dibaca: README AthillaZaidan/SafeTrip, AthillaZaidan/Understand-Any-Paper, dan AthillaZaidan/PacketForge. Pola yang diadaptasi adalah pengantar fungsi produk, kapabilitas, workflow, setup, dan status milestone. Tidak menyalin teks, pencapaian, atau klaim implementasi dari proyek referensi.
+
+Perubahan: README ditulis ulang untuk menjelaskan FlowDesk sebagai workflow case tracker; tabel kurikulum serta penjelasan memory dan tujuan karier tidak lagi menjadi bagian halaman utama. Status early development dan kemampuan yang direncanakan tetap dinyatakan jelas. Preferensi ini dicatat pada AGENTS.md agar digunakan pada pembaruan berikutnya.
+
+Tidak ada kode aplikasi, dependency, environment, atau aturan transisi yang diubah. Publikasi GitHub tetap menunggu repository remote tersedia. Periksa riwayat Git untuk commit aktual revisi ini.
+
+Verifikasi revisi: empat dokumen Markdown diperiksa tanpa tautan lokal yang rusak; pemeriksaan diff tidak menemukan masalah whitespace. Tidak ada tes aplikasi yang dijalankan karena perubahan hanya mencakup dokumentasi.
