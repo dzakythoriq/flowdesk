@@ -35,7 +35,10 @@ Read README.md and docs/PROGRESS.md before proposing the next task. Read docs/SE
 
 ## Public documentation style
 
-- Keep the public README and repository description focused on the product: purpose, behavior, workflow, setup, implementation status, and roadmap.
+- Write the public README in polished, professional English. Keep mentoring conversations in Bahasa Indonesia.
+- Do not include a Roadmap section or development checklist in the README unless the user explicitly requests one. Keep milestone tracking in supporting progress notes.
+
+- Keep the public README and repository description focused on the product: purpose, behavior, workflow, setup, and implementation status.
 - Do not prominently label FlowDesk as "proyek belajar Python", a tutorial, a curriculum, or a career-development exercise in public-facing introductory text.
 - Keep mentoring preferences and session context in the supporting instructions and progress notes. The README should introduce the software.
 - Use other projects only as presentation references; do not copy their wording, accomplishments, complexity, or feature claims. Keep planned capabilities clearly distinguished from implemented ones.

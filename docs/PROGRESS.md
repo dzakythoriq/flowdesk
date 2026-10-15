@@ -92,3 +92,7 @@ Perubahan: README ditulis ulang untuk menjelaskan FlowDesk sebagai workflow case
 Tidak ada kode aplikasi, dependency, environment, atau aturan transisi yang diubah. Publikasi GitHub tetap menunggu repository remote tersedia. Periksa riwayat Git untuk commit aktual revisi ini.
 
 Verifikasi revisi: empat dokumen Markdown diperiksa tanpa tautan lokal yang rusak; pemeriksaan diff tidak menemukan masalah whitespace. Tidak ada tes aplikasi yang dijalankan karena perubahan hanya mencakup dokumentasi.
+
+## Revisi bahasa README, 15 Oktober 2026
+
+Permintaan terbaru: hapus seluruh bagian Roadmap beserta checklist dari README dan gunakan bahasa Inggris yang rapi serta profesional. Seluruh prosa README diterjemahkan dan disunting ke bahasa Inggris. Aturan workflow dan status implementasi tetap dipertahankan. Preferensi bahasa README dan penghilangan roadmap dicatat dalam AGENTS.md; bahasa percakapan tetap Bahasa Indonesia. Perubahan hanya mencakup dokumentasi.

@@ -2,64 +2,64 @@
 
 **Workflow Case Tracker & Simulator**
 
-FlowDesk dirancang untuk melacak kasus dengan alur status yang eksplisit, identitas otomatis, dan riwayat perubahan yang dapat ditelusuri. Fokusnya adalah menjaga konsistensi antara status kasus dan catatan perubahannya.
+FlowDesk is designed to track cases through explicit status transitions, automatically generated identifiers, and a traceable event history. Its core focus is keeping each case's current state consistent with its recorded changes.
 
-## Status Pengembangan
+## Development Status
 
-**Early development.** Environment Python dan dokumentasi awal sudah tersedia. Implementasi core workflow, CLI, penyimpanan, dan API belum tersedia.
+**Early development.** The Python environment and initial documentation are in place. The core workflow, CLI, persistence layer, and API have not yet been implemented.
 
-## Kapabilitas yang Direncanakan
+## Planned Capabilities
 
-- Membuat kasus dengan ID otomatis, judul, deskripsi, dan timestamp.
-- Menampilkan daftar kasus dan detail berdasarkan ID.
-- Memvalidasi perubahan status sesuai aturan workflow.
-- Menyimpan event pembuatan dan perubahan status sebagai history kasus.
-- Mempertahankan data secara lokal menggunakan SQLite.
-- Menyediakan CLI, kemudian REST API untuk operasi inti yang sama.
+- Create cases with an automatically generated ID, title, description, and timestamps.
+- List cases and retrieve individual case details by ID.
+- Validate status changes against explicit workflow rules.
+- Record case creation and successful status changes in an event history.
+- Persist case data locally using SQLite.
+- Provide a CLI and, subsequently, a REST API backed by the same core operations.
 
-Contoh alur: operator membuat kasus `Review sample invoice`, membuka kasus, memulai pemeriksaan, lalu menandainya selesai dan menutupnya. Jika pekerjaan terhambat, kasus dapat masuk ke `BLOCKED` sebelum dilanjutkan kembali. Seluruh data contoh bersifat fiktif.
+A typical workflow starts with an operator creating a case such as `Review sample invoice`, opening it, starting work, and eventually resolving and closing it. Work can move to `BLOCKED` when an issue prevents progress, then return to `IN_PROGRESS` once the issue is cleared. All sample cases use fictional data.
 
 ## Workflow
 
-Alur utama:
+The primary lifecycle is:
 
 ```text
 NEW -> OPEN -> IN_PROGRESS -> RESOLVED -> CLOSED
 ```
 
-| Status sekarang | Transisi yang diizinkan |
+| Current status | Allowed transitions |
 |---|---|
 | `NEW` | `OPEN`, `CANCELLED` |
 | `OPEN` | `IN_PROGRESS`, `CANCELLED` |
 | `IN_PROGRESS` | `BLOCKED`, `RESOLVED` |
 | `BLOCKED` | `IN_PROGRESS` |
 | `RESOLVED` | `CLOSED` |
-| `CLOSED` | Tidak ada |
-| `CANCELLED` | Tidak ada |
+| `CLOSED` | None |
+| `CANCELLED` | None |
 
-Transisi yang ditolak harus mempertahankan status, `updated_at`, dan history. Pada tahap persistence, perubahan status dan penambahan event akan disimpan dalam satu transaksi database.
+A rejected transition must leave the case's status, `updated_at`, and event history unchanged. Once persistence is implemented, case creation and status updates must be saved in the same database transaction as their corresponding history events.
 
-## Model Data
+## Data Model
 
-| Entitas | Field yang direncanakan |
+| Entity | Planned fields |
 |---|---|
 | `Case` | `case_id`, `title`, `description`, `status`, `created_at`, `updated_at` |
 | `CaseEvent` | `event_id`, `case_id`, `event_type`, `old_status`, `new_status`, `reason`, `created_at` |
 
-`Case` menyimpan keadaan terkini. `CaseEvent` menyimpan kejadian yang terkait dengan satu kasus. Jenis event awal adalah `CASE_CREATED` dan `STATUS_CHANGED`.
+`Case` stores the current state. `CaseEvent` records an event associated with a case. The initial event types are `CASE_CREATED` and `STATUS_CHANGED`.
 
-## Teknologi
+## Technology
 
-| Komponen | Teknologi | Status |
+| Component | Technology | Status |
 |---|---|---|
-| Runtime | Python 3.14 | Environment tersedia |
-| Persistence | SQLite melalui `sqlite3` | Direncanakan |
-| API | FastAPI | Direncanakan |
-| Automated testing | pytest | Direncanakan |
+| Runtime | Python 3.14 | Environment configured |
+| Persistence | SQLite via `sqlite3` | Planned |
+| API | FastAPI | Planned |
+| Automated testing | pytest | Planned |
 
 ## Setup
 
-Lihat [panduan setup](docs/SETUP.md) untuk menyiapkan environment lokal. Jika `.venv` sudah tersedia, jalankan pemeriksaan berikut dari root repository melalui PowerShell:
+See the [setup guide](docs/SETUP.md) for local environment configuration. If `.venv` already exists, run the following checks from the repository root in PowerShell:
 
 ```powershell
 .\.venv\Scripts\python.exe --version
@@ -67,20 +67,10 @@ Lihat [panduan setup](docs/SETUP.md) untuk menyiapkan environment lokal. Jika `.
 .\.venv\Scripts\python.exe -m pip --version
 ```
 
-Interpreter dan pip harus mengarah ke `.venv` proyek ini. Pemeriksaan environment menghasilkan `True`.
+The interpreter and pip paths should point to this project's `.venv` directory. The virtual environment check should return `True`.
 
-Perintah menjalankan aplikasi dan pengujian akan ditambahkan bersama implementasinya.
-
-## Roadmap
-
-- [x] Environment lokal dan dokumentasi awal.
-- [ ] Core model, validasi input, aturan transisi, dan event history dalam memori.
-- [ ] Pengujian perilaku inti.
-- [ ] CLI untuk membuat, melihat, dan memperbarui kasus.
-- [ ] SQLite persistence dengan transaksi dan pengujian rollback.
-- [ ] REST API dan pengujian endpoint.
-- [ ] Koleksi Postman untuk skenario API utama.
+Application and test commands will be documented as their implementations become available.
 
 ## Scope
 
-Versi awal ditujukan untuk satu operator lokal dengan data fiktif. Frontend web, authentication, multi-user, notifikasi, integrasi eksternal, AI/LLM, dan deployment cloud berada di luar scope awal.
+The initial version targets a single local operator working with fictional data. A web frontend, authentication, multi-user support, notifications, external integrations, AI/LLM features, and cloud deployment are outside the initial scope.
