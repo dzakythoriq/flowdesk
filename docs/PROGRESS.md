@@ -60,7 +60,7 @@ Pembahasan konsep bukan bukti bahwa seluruh topik telah dikuasai. Lanjutkan deng
 
 Menyiapkan README, AGENTS.md, panduan setup, catatan progres, dan .gitignore. Menyiapkan Git lokal serta publikasi dokumentasi ke repository GitHub public yang diminta.
 
-Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore -v .venv/Scripts/python.exe` menunjukkan bahwa `.venv` dikecualikan oleh .gitignore. Dokumentasi fondasi disiapkan untuk commit pertama. Akun GitHub terhubung adalah `dzakythoriq`; repository remote `flowdesk` belum tersedia melalui koneksi pada saat pemeriksaan. Publikasi belum dilakukan. Gunakan `git log --oneline -5` untuk membaca commit aktual, dan jangan menganggap commit lokal otomatis sudah ada di GitHub.
+Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore -v .venv/Scripts/python.exe` menunjukkan bahwa `.venv` dikecualikan oleh .gitignore. Commit fondasi telah dibuat: `be73004` dengan pesan `docs: establish FlowDesk setup and learning workflow`. Setelah commit tersebut, working tree bersih. Pemeriksaan staged diff tidak menemukan masalah whitespace; empat dokumen Markdown diperiksa dan tidak ada tautan lokal yang rusak. Daftar tracked files hanya berisi lima berkas dokumentasi dan .gitignore; environment tidak ikut tersimpan. Akun GitHub terhubung adalah `dzakythoriq`; repository remote `flowdesk` belum tersedia melalui koneksi pada saat pemeriksaan. Publikasi belum dilakukan. Gunakan `git log --oneline -5` untuk membaca commit aktual, dan jangan menganggap commit lokal otomatis sudah ada di GitHub.
 
 ## Langkah belajar berikutnya
 
