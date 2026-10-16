@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 15 Oktober 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 16 Oktober 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -19,6 +19,10 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - Nama repository yang diminta adalah `flowdesk`, dengan visibilitas public.
 
 ## Keadaan yang sudah diverifikasi
+
+- Repository GitHub: https://github.com/dzakythoriq/flowdesk (public).
+- Remote origin: https://github.com/dzakythoriq/flowdesk.git.
+- Branch lokal main sudah mengikuti origin/main.
 
 - Root proyek lokal: `C:\Project\flowdesk`.
 - Environment tersedia pada `.venv` di root proyek.
@@ -96,3 +100,26 @@ Verifikasi revisi: empat dokumen Markdown diperiksa tanpa tautan lokal yang rusa
 ## Revisi bahasa README, 15 Oktober 2026
 
 Permintaan terbaru: hapus seluruh bagian Roadmap beserta checklist dari README dan gunakan bahasa Inggris yang rapi serta profesional. Seluruh prosa README diterjemahkan dan disunting ke bahasa Inggris. Aturan workflow dan status implementasi tetap dipertahankan. Preferensi bahasa README dan penghilangan roadmap dicatat dalam AGENTS.md; bahasa percakapan tetap Bahasa Indonesia. Perubahan hanya mencakup dokumentasi.
+
+## Publikasi GitHub, 16 Oktober 2026
+
+Repository public `dzakythoriq/flowdesk` tersedia dan izin push terverifikasi. Remote `origin` dihubungkan ke `https://github.com/dzakythoriq/flowdesk.git`. Pemeriksaan branch remote sebelum pengiriman menunjukkan repository kosong.
+
+Perintah yang benar-benar dijalankan dari root proyek:
+
+```powershell
+git remote add origin https://github.com/dzakythoriq/flowdesk.git
+git ls-remote --heads origin
+git push -u origin main
+git rev-parse HEAD
+git ls-remote origin refs/heads/main
+git status --short --branch
+```
+
+Hasil pengiriman pertama: branch `main` berhasil dibuat di GitHub dan branch lokal diatur mengikuti `origin/main`. Commit lokal serta remote sama-sama `be8d81f8f43117ec4ee295b27e17f3e4b150bbf0`. Working tree bersih. README kemudian dibaca langsung melalui integrasi GitHub; isinya berbahasa Inggris, berfokus pada produk, dan tidak memiliki bagian Roadmap.
+
+Lima berkas proyek dipublikasikan: `.gitignore`, `AGENTS.md`, `README.md`, `docs/PROGRESS.md`, dan `docs/SETUP.md`. `.venv`, konfigurasi lokal, dan dokumen handoff pribadi tidak berada dalam tracked files.
+
+Panduan setup diperbarui dengan alamat repository serta arti remote, origin, push, dan upstream. Pembaruan catatan ini disimpan dalam commit dokumentasi tersendiri dan dikirim setelah pengiriman pertama. Untuk SHA terbaru, baca `git log -1 --oneline` dan bandingkan dengan `git ls-remote origin refs/heads/main`.
+
+Milestone GitHub selesai pada pengiriman pertama yang telah diverifikasi. Langkah berikutnya tetap Stage 1: merepresentasikan satu kasus dengan dictionary Python, membaca field, dan memprediksi perubahan nilai. Belum ada implementasi aplikasi atau tes aplikasi yang dijalankan.

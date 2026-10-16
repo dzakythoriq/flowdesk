@@ -80,6 +80,25 @@ Sebelum mengirim commit, periksa staged diff dan pastikan hanya berkas proyek ya
 
 Keberhasilan publikasi diperiksa dengan membandingkan commit branch lokal dengan branch remote, bukan hanya keberhasilan menambahkan alamat remote.
 
+## Repository FlowDesk
+
+Repository public: https://github.com/dzakythoriq/flowdesk.
+
+Pada setup lokal awal, alamat tersebut disimpan sebagai remote bernama `origin`. Branch `main` sudah diatur mengikuti `origin/main` melalui pengiriman pertama berikut:
+
+```powershell
+git remote add origin https://github.com/dzakythoriq/flowdesk.git
+git push -u origin main
+```
+
+Perintah di atas adalah catatan konfigurasi awal yang sudah dilakukan, bukan langkah yang perlu diulang pada folder yang sudah terhubung. Periksa `git remote -v` dan `git status --short --branch` untuk melihat konfigurasi saat ini.
+
+- Remote adalah alamat repository lain yang terhubung dengan repository lokal.
+- `origin` adalah nama singkat untuk alamat GitHub proyek ini.
+- `push` mengirim commit lokal ke remote.
+- Opsi `-u` mengatur upstream, yaitu branch remote yang menjadi pasangan branch lokal. Setelah itu Git dapat melaporkan apakah branch lokal sudah sinkron, lebih maju, atau tertinggal dibanding catatan remote terakhir.
+- `git ls-remote origin refs/heads/main` membaca SHA branch langsung dari GitHub; bandingkan dengan `git rev-parse HEAD` untuk memeriksa hasil push.
+
 ## Dokumentasi setelah milestone
 
 Perbarui `docs/PROGRESS.md` dengan hasil aktual, konsep yang perlu dilatih, dan satu langkah berikutnya. Perbarui README ketika kemampuan aplikasi berubah. Dokumentasi tidak boleh menyebut fitur atau tes berhasil jika belum diimplementasikan atau dijalankan.
