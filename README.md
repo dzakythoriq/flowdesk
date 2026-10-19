@@ -6,7 +6,7 @@ FlowDesk is designed to track cases through explicit status transitions, automat
 
 ## Development Status
 
-**Early development.** The Python environment and initial documentation are in place. The core workflow, CLI, persistence layer, and API have not yet been implemented.
+**Early development.** A minimal in-memory script represents a sample case and allows it to move from `NEW` to `OPEN`, leaving other starting statuses unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
 
 ## Planned Capabilities
 
@@ -69,7 +69,15 @@ See the [setup guide](docs/SETUP.md) for local environment configuration. If `.v
 
 The interpreter and pip paths should point to this project's `.venv` directory. The virtual environment check should return `True`.
 
-Application and test commands will be documented as their implementations become available.
+Run the current case-state script from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe main.py
+```
+
+The script uses the sample case defined in `main.py` and prints a message followed by the final status. Opening a case is allowed only when its initial status is `NEW`. The script operates in memory and recreates the sample data on each run.
+
+A persistent automated test suite is not yet available.
 
 ## Scope
 
