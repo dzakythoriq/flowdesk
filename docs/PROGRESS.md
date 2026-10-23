@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 19 Oktober 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 23 Oktober 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -68,9 +68,11 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Simpan checkpoint implementasi pertama melalui Git. Berkas yang terkait: `main.py`, `README.md`, dan `docs/PROGRESS.md`. Pembelajar mencoba staging, membaca staged diff, membuat commit, dan push sendiri dengan petunjuk pendamping. Belum ada commit atau push baru atas latihan ini saat catatan diperbarui.
+Pembelajar telah menulis `show_status(case_data)` dan `open_case(case_data)` serta menambahkan pemanggilan pembukaan di antara dua pemanggilan penampil status. Pemeriksaan pada 23 Oktober 2026 memverifikasi NEW menjadi OPEN, CLOSED tetap CLOSED, dan pembukaan ulang pada OPEN tidak mengubah kasus.
 
-Setelah checkpoint dikonfirmasi, lanjutkan ke fungsi kecil untuk mengelompokkan operasi membuka kasus agar dapat dipanggil pada data kasus yang berbeda tanpa menyalin blok if/else. Jelaskan `def`, parameter, pemanggilan fungsi, dan return secara bertahap sesuai kebutuhan, bukan sekaligus. Belum ada fungsi baru yang ditulis.
+Sebelum menambah fitur, minta pembelajar menjelaskan perbedaan definisi dan pemanggilan function, serta mengapa perubahan melalui parameter `case_data` terlihat pada dictionary `case`. Pemanggilan function sempat terlewat dan konsep ini masih perlu diperkuat; keberhasilan eksekusi belum membuktikan penguasaan.
+
+Latihan kecil berikutnya setelah peninjauan checkpoint: gunakan kedua function pada dua dictionary kasus berbeda dan amati bahwa hanya dictionary yang diberikan ke `open_case` yang berubah. Return, validasi transisi lengkap, history, dan persistence belum diperkenalkan sebagai implementasi.
 
 ## Batasan saat ini
 
@@ -169,3 +171,50 @@ Title dan description tidak berubah pada kedua percobaan. Hash source file sebel
 README berbahasa Inggris diperbarui untuk menjelaskan kemampuan skrip yang benar-benar tersedia, cara menjalankannya, batas aturan saat ini, serta bahwa data dibuat ulang pada setiap eksekusi. README tetap tanpa Roadmap atau checklist pengembangan.
 
 Latihan membaca data, assignment, dan kondisi sederhana telah memperlihatkan hasil sesuai untuk skenario yang dicoba. Ini belum membuktikan keseluruhan tabel transisi atau persistence. Catatan ini masih lokal; commit/push checkpoint berikutnya akan dicoba oleh pembelajar.
+
+## Checkpoint kode pertama, 19 Oktober 2026
+
+Pembelajar menjalankan staging untuk `main.py`, `README.md`, dan `docs/PROGRESS.md`, membaca staged diff, membuat commit `feat: add guarded case opening`, lalu menjalankan push sendiri. Transcript terminal menunjukkan seluruh langkah berhasil.
+
+Verifikasi ulang pendamping:
+
+- `git status --short --branch` menunjukkan `main...origin/main` tanpa perubahan lokal pada saat pemeriksaan.
+- `git log -2 --oneline` menunjukkan commit terbaru `ffc8534`.
+- `git rev-parse HEAD` dan `git ls-remote origin refs/heads/main` sama-sama menghasilkan `ffc853477d87711b77ee04a081b179da75ee3d57`.
+
+Tidak ada source code yang diubah atau commit/push baru yang dibuat pendamping. Catatan konfirmasi ini diperbarui lokal setelah pemeriksaan; perubahan dokumentasi tersebut dapat disertakan pada checkpoint implementasi berikutnya, tanpa membuat siklus commit khusus setiap kali mencatat commit terakhir.
+
+Pembelajar sempat menjalankan deactivate sebelum perintah Git. Git tidak mensyaratkan penonaktifan environment; untuk eksekusi Python berikutnya gunakan aktivasi yang sudah dipahami atau interpreter eksplisit `.venv\Scripts\python.exe`.
+
+## Function untuk status dan pembukaan kasus, 23 Oktober 2026
+
+Pembelajar menulis dua function pada `main.py`: `show_status(case_data)` mencetak status, sedangkan `open_case(case_data)` memeriksa status NEW sebelum memperbaruinya menjadi OPEN. Dictionary contoh berada di luar function. Urutan pemanggilan sekarang adalah `show_status(case)`, `open_case(case)`, lalu `show_status(case)`.
+
+Konsep yang dibahas: indentasi menentukan blok, definisi function tidak langsung menjalankan isinya, parameter merujuk ke dictionary yang diberikan saat pemanggilan, dan perubahan pada dictionary tersebut terlihat oleh pemanggil. Percobaan tanpa memanggil `open_case` mencetak NEW dua kali. Ini menjadi bahan latihan, bukan bukti bahwa seluruh konsep function telah dikuasai.
+
+Pendamping membaca source tersimpan lalu menjalankan dari root proyek:
+
+```powershell
+.\.venv\Scripts\python.exe -B main.py
+```
+
+Hasil aktual, exit code 0:
+
+```text
+NEW
+This case is new
+OPEN
+```
+
+Pemeriksa sementara dikirim melalui stdin ke `.\.venv\Scripts\python.exe -B -`. Pemeriksa membaca definisi function melalui AST dan memanggil function pada dictionary fiktif, tanpa mengedit source:
+
+- NEW menjadi OPEN dengan pesan yang sesuai.
+- CLOSED tetap CLOSED dengan pesan penolakan yang sesuai.
+- `show_status` hanya mencetak status dan tidak mengubah dictionary.
+- Title dan description tidak berubah saat pembukaan kasus.
+- Pembukaan kedua pada kasus yang sudah OPEN mempertahankan dictionary dan mencetak `This case is not new`.
+- Hash source sebelum dan sesudah pemeriksaan sama.
+
+Seluruh pemeriksaan lulus dengan exit code 0. Tidak menambahkan dependency, berkas tes permanen, atau fitur baru. Source tetap tulisan pembelajar dan tidak diubah pendamping. README diperbarui dalam bahasa Inggris untuk menjelaskan kedua function dan output aktual, tanpa Roadmap.
+
+Pembelajar meminta commit dan push ke repository GitHub yang sudah terhubung. Catatan ini disiapkan untuk disertakan bersama kode dan README dalam checkpoint yang sama. Konfirmasi hasil publikasi diberikan setelah membandingkan SHA lokal dengan branch main di remote; SHA checkpoint dapat dibaca dari riwayat Git tanpa membuat commit tambahan hanya untuk mencatat SHA-nya sendiri.
