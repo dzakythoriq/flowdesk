@@ -7,9 +7,21 @@ def open_case(case_data):
         case_data["status"] = "OPEN"   
     else:
         print("This case is not new")
-               
-case = {"title": "Review sample invoice", "description": "Fictional invoice", "status": "NEW"}
 
-show_status(case)
-open_case(case)    
-show_status(case)
+def get_status(case_data):
+    return case_data["status"]
+
+case_a = {"title": "Review sample invoice", "description": "Fictional invoice", "status": "NEW"}
+case_b = {"title": "Another sample invoice", "description": "Imaginary invoice", "status": "NEW"}
+
+open_case(case_a)
+show_status(case_a)
+show_status(case_b)
+
+open_case(case_b)
+show_status(case_a)
+show_status(case_b)
+
+status_a = get_status(case_a)
+if status_a == "OPEN":
+    print("This case is ready for processing")

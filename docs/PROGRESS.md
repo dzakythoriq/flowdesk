@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 23 Oktober 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 24 Oktober 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -32,7 +32,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- `main.py` tersedia sebagai skrip awal dengan dictionary kasus dan aturan pembukaan: hanya status awal NEW yang dapat menjadi OPEN. Percobaan NEW dan CLOSED sudah diverifikasi; seluruh workflow dan suite tes tersimpan belum tersedia.
+- `main.py` menggunakan dua dictionary kasus terpisah dan tiga function: `show_status`, `open_case`, serta `get_status`. Hanya status NEW yang dapat dibuka menjadi OPEN; hasil `get_status` digunakan dalam kondisi. Seluruh workflow dan suite tes tersimpan belum tersedia.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -68,11 +68,13 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Pembelajar telah menulis `show_status(case_data)` dan `open_case(case_data)` serta menambahkan pemanggilan pembukaan di antara dua pemanggilan penampil status. Pemeriksaan pada 23 Oktober 2026 memverifikasi NEW menjadi OPEN, CLOSED tetap CLOSED, dan pembukaan ulang pada OPEN tidak mengubah kasus.
+Sesi berhenti pada 24 Oktober 2026 atas permintaan pembelajar setelah checkpoint return dan kondisi. Jangan menambah implementasi sebelum sesi dilanjutkan.
 
-Sebelum menambah fitur, minta pembelajar menjelaskan perbedaan definisi dan pemanggilan function, serta mengapa perubahan melalui parameter `case_data` terlihat pada dictionary `case`. Pemanggilan function sempat terlewat dan konsep ini masih perlu diperkuat; keberhasilan eksekusi belum membuktikan penguasaan.
+`get_status(case_data)` sudah ditulis pembelajar dan diverifikasi: mengembalikan status tanpa mencetak atau mengubah dictionary. Hasilnya disimpan ke `status_a`, kemudian digunakan oleh kondisi `status_a == "OPEN"`. Pembelajar memprediksi dengan benar bahwa perbandingan terhadap CLOSED bernilai False saat hasil baca status masih OPEN.
 
-Latihan kecil berikutnya setelah peninjauan checkpoint: gunakan kedua function pada dua dictionary kasus berbeda dan amati bahwa hanya dictionary yang diberikan ke `open_case` yang berubah. Return, validasi transisi lengkap, history, dan persistence belum diperkenalkan sebagai implementasi.
+Saat melanjutkan, mulai dengan peninjauan singkat: `get_status(case_a)` tetap dipanggil dalam assignment meskipun tidak ada print; `return` memberikan nilai, assignment menyimpannya, if memeriksa, dan print menampilkan pesan. Jangan mengulang pembuatan function yang sudah ada. Setelah peninjauan, latihan kecil berikutnya dapat berupa function `is_new_case(case_data)` yang mengembalikan hasil perbandingan sebagai boolean. Function boolean ini belum ditulis atau dijalankan.
+
+Seluruh workflow, history, persistence, dan API tetap belum diimplementasikan. Keberhasilan latihan ini bukan bukti penguasaan seluruh konsep function atau mutability.
 
 ## Batasan saat ini
 
@@ -218,3 +220,40 @@ Pemeriksa sementara dikirim melalui stdin ke `.\.venv\Scripts\python.exe -B -`. 
 Seluruh pemeriksaan lulus dengan exit code 0. Tidak menambahkan dependency, berkas tes permanen, atau fitur baru. Source tetap tulisan pembelajar dan tidak diubah pendamping. README diperbarui dalam bahasa Inggris untuk menjelaskan kedua function dan output aktual, tanpa Roadmap.
 
 Pembelajar meminta commit dan push ke repository GitHub yang sudah terhubung. Catatan ini disiapkan untuk disertakan bersama kode dan README dalam checkpoint yang sama. Konfirmasi hasil publikasi diberikan setelah membandingkan SHA lokal dengan branch main di remote; SHA checkpoint dapat dibaca dari riwayat Git tanpa membuat commit tambahan hanya untuk mencatat SHA-nya sendiri.
+
+## Menggunakan function pada dua kasus, 24 Oktober 2026
+
+Pembelajar membuat `case_a` dan `case_b` sebagai dua dictionary terpisah, masing-masing dengan title dan description fiktif serta status awal NEW. Pemanggilan `open_case(case_a)` menghasilkan status OPEN pada kasus pertama sementara kasus kedua tetap NEW. Setelah `open_case(case_b)`, kedua kasus berstatus OPEN. Definisi kedua function tetap digunakan tanpa menyalin logika pembukaan.
+
+Pembelajar memprediksi enam baris output dengan benar dan menjelaskan bahwa dictionary yang diberikan di dalam tanda kurung menentukan data yang diproses function. Istilah argumen dan parameter masih dapat diperkuat pada latihan berikutnya.
+
+Pendamping membaca source lalu menjalankan `.\.venv\Scripts\python.exe -B main.py` dari root proyek. Exit code 0; output aktual:
+
+```text
+This case is new
+OPEN
+NEW
+This case is new
+OPEN
+OPEN
+```
+
+Tidak mengubah source, memasang dependency, atau menambahkan tes permanen. README disesuaikan dengan contoh dua kasus. Perubahan latihan dan dokumentasi masih lokal; tidak membuat commit atau push baru pada checkpoint ini. Materi return baru direncanakan dan belum diimplementasikan oleh pembelajar.
+
+## Return, assignment, dan kondisi, 24 Oktober 2026
+
+Pembelajar menambahkan `get_status(case_data)` dengan `return case_data["status"]`, menyimpan hasilnya melalui `status_a = get_status(case_a)`, dan menggunakan nilai tersebut pada kondisi `if status_a == "OPEN"`. Source tersimpan tetap memakai pembanding OPEN dan mencetak pesan kesiapan sebagai baris ketujuh. Prediksi terhadap CLOSED adalah latihan konseptual, bukan perubahan source yang diminta untuk dipublikasikan.
+
+Perbedaan yang dijelaskan: function tetap dipanggil saat berada di sisi kanan assignment; return tidak otomatis mencetak output; hasil dapat disimpan tanpa print. Status di dictionary tetap ada meskipun hasil pemanggilan tidak disimpan dalam variabel tambahan. Pembelajar memprediksi kondisi CLOSED bernilai False karena case_a masih OPEN. Ini menunjukkan pemahaman pada contoh tersebut, bukan penguasaan menyeluruh.
+
+Pendamping menjalankan pemeriksa sementara melalui stdin dengan `.\.venv\Scripts\python.exe -B -`. Pemeriksa membaca dan mengeksekusi source aktual dengan penangkapan stdout, lalu memeriksa:
+
+- Output sample persis tujuh baris; baris terakhir `This case is ready for processing`.
+- `status_a` bernilai OPEN dan kedua dictionary kasus berstatus OPEN.
+- `get_status` mengembalikan NEW, OPEN, dan CLOSED sesuai input tanpa output dan tanpa memodifikasi dictionary.
+- Mengganti hanya pembanding kondisi terakhir menjadi CLOSED pada salinan AST di memori menghilangkan pesan terakhir dan mempertahankan enam baris sebelumnya.
+- Hash source sebelum dan sesudah pemeriksaan sama.
+
+Seluruh pemeriksaan lulus dengan exit code 0. Tidak mengubah source buatan pembelajar, memasang dependency, atau menambahkan berkas tes permanen. README berbahasa Inggris diperbarui dengan fungsi pembaca status dan output aktual, tanpa Roadmap.
+
+Pembelajar meminta sesi dilanjutkan nanti dan checkpoint ini dipush. Kode, README, serta progres disiapkan dalam satu commit. Hasil publikasi dikonfirmasi setelah push dengan membandingkan SHA lokal dan branch main langsung dari remote, serta memeriksa working tree. Lihat riwayat Git untuk SHA checkpoint; tidak diperlukan commit tambahan hanya untuk mencatat SHA itu sendiri.

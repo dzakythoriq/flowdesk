@@ -6,7 +6,7 @@ FlowDesk is designed to track cases through explicit status transitions, automat
 
 ## Development Status
 
-**Early development.** A minimal in-memory script uses separate functions to display a case's status and open it. Opening is allowed only from `NEW` to `OPEN`; other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
+**Early development.** A minimal in-memory script uses separate functions to display a case's status, return its status for further checks, and open it. Opening is allowed only from `NEW` to `OPEN`; other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
 
 ## Planned Capabilities
 
@@ -75,12 +75,16 @@ Run the current case-state script from the repository root:
 .\.venv\Scripts\python.exe main.py
 ```
 
-The script uses the sample case defined in `main.py`. `show_status(case_data)` displays its current status, and `open_case(case_data)` opens it only when its status is `NEW`. The sample calls these functions to display the status before and after the opening attempt:
+The script defines two independent sample cases in `main.py`. `show_status(case_data)` displays the supplied case's current status, and `open_case(case_data)` opens it only when its status is `NEW`. The sample opens the first case and displays both statuses, then opens the second case and displays both statuses again. It also assigns the value returned by `get_status(case_a)` to a variable and checks whether it equals `OPEN` before printing a readiness message:
 
 ```text
+This case is new
+OPEN
 NEW
 This case is new
 OPEN
+OPEN
+This case is ready for processing
 ```
 
 Other starting statuses remain unchanged. Repeating the opening attempt on an `OPEN` case also leaves its status unchanged. The script operates in memory and recreates the sample data on each run.
