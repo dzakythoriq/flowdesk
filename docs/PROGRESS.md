@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 24 Oktober 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 26 Oktober 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -32,7 +32,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- `main.py` menggunakan dua dictionary kasus terpisah dan tiga function: `show_status`, `open_case`, serta `get_status`. Hanya status NEW yang dapat dibuka menjadi OPEN; hasil `get_status` digunakan dalam kondisi. Seluruh workflow dan suite tes tersimpan belum tersedia.
+- Checkpoint 26 Oktober 2026 pada `main.py` menambahkan `is_new_case`, tetapi integrasinya dalam `open_case` belum selesai dan program berhenti dengan TypeError. Jangan menganggap checkpoint ini dapat dijalankan sampai selesai. Versi terakhir yang sudah diverifikasi berjalan adalah commit `bbc364add1bc2ad767175565e5f2b78591bb3af1`. Seluruh workflow dan suite tes tersimpan belum tersedia.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -68,13 +68,13 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Sesi berhenti pada 24 Oktober 2026 atas permintaan pembelajar setelah checkpoint return dan kondisi. Jangan menambah implementasi sebelum sesi dilanjutkan.
+Sesi dihentikan pada 26 Oktober 2026 atas permintaan pembelajar untuk dilanjutkan besok. Pembelajar masih bingung tentang function yang memanggil function lain. Simpan keadaan saat ini tanpa memperbaiki source secara otomatis atau menambah materi.
 
-`get_status(case_data)` sudah ditulis pembelajar dan diverifikasi: mengembalikan status tanpa mencetak atau mengubah dictionary. Hasilnya disimpan ke `status_a`, kemudian digunakan oleh kondisi `status_a == "OPEN"`. Pembelajar memprediksi dengan benar bahwa perbandingan terhadap CLOSED bernilai False saat hasil baca status masih OPEN.
+Checkpoint source belum berjalan sampai selesai. `is_new_case(case_data)` sendiri ditulis dengan `return case_data["status"] == "NEW"`; tetapi `open_case` memakai `is_new_case["status"]` pada kondisi dan assignment. Eksekusi mencetak True lalu berhenti dengan TypeError pada baris 5. Versi runnable sebelumnya adalah `bbc364a`.
 
-Saat melanjutkan, mulai dengan peninjauan singkat: `get_status(case_a)` tetap dipanggil dalam assignment meskipun tidak ada print; `return` memberikan nilai, assignment menyimpannya, if memeriksa, dan print menampilkan pesan. Jangan mengulang pembuatan function yang sudah ada. Setelah peninjauan, latihan kecil berikutnya dapat berupa function `is_new_case(case_data)` yang mengembalikan hasil perbandingan sebagai boolean. Function boolean ini belum ditulis atau dijalankan.
+Saat sesi dilanjutkan, mulai dari perbedaan dictionary dan function: `case_data["status"]` mengakses field dictionary, sedangkan `is_new_case(case_data)` memanggil function yang memberikan boolean. Jelaskan satu langkah setiap waktu, lalu minta pembelajar sendiri mengganti kondisi menjadi `if is_new_case(case_data):` dan mempertahankan assignment `case_data["status"] = "OPEN"`. Kedua perbaikan ini sudah dicontohkan di chat tetapi belum ada pada file checkpoint. Jangan menganggapnya selesai atau dipahami.
 
-Seluruh workflow, history, persistence, dan API tetap belum diimplementasikan. Keberhasilan latihan ini bukan bukti penguasaan seluruh konsep function atau mutability.
+Setelah pembelajar memperbaiki kode, verifikasi NEW menjadi OPEN, CLOSED tetap CLOSED, dan pembukaan ulang pada OPEN tidak mengubah kasus. Masih ada dua pemanggilan `open_case(case_a)` pada sample; jelaskan pesan penolakan kedua sebagai akibat status sudah OPEN. Jangan menambah fitur sampai pembelajar meninjau hasilnya.
 
 ## Batasan saat ini
 
@@ -257,3 +257,21 @@ Pendamping menjalankan pemeriksa sementara melalui stdin dengan `.\.venv\Scripts
 Seluruh pemeriksaan lulus dengan exit code 0. Tidak mengubah source buatan pembelajar, memasang dependency, atau menambahkan berkas tes permanen. README berbahasa Inggris diperbarui dengan fungsi pembaca status dan output aktual, tanpa Roadmap.
 
 Pembelajar meminta sesi dilanjutkan nanti dan checkpoint ini dipush. Kode, README, serta progres disiapkan dalam satu commit. Hasil publikasi dikonfirmasi setelah push dengan membandingkan SHA lokal dan branch main langsung dari remote, serta memeriksa working tree. Lihat riwayat Git untuk SHA checkpoint; tidak diperlukan commit tambahan hanya untuk mencatat SHA itu sendiri.
+
+## Checkpoint boolean dan integrasi yang belum selesai, 26 Oktober 2026
+
+Pembelajar menulis `is_new_case(case_data)` untuk mengembalikan hasil perbandingan status dengan NEW. Dibahas perbedaan nilai status berupa string dan jawaban pemeriksaan berupa boolean. Pembelajar memprediksi hasil False untuk kasus CLOSED dan urutan output pada contoh tiga pemanggilan. Hal ini tidak membuktikan pemahaman integrasi antar-function.
+
+Saat memakai pemeriksa di `open_case`, nama function dipakai sebagai dictionary pada dua baris: `if is_new_case["status"] == "NEW":` dan `is_new_case["status"] = "OPEN"`. Pendamping menjelaskan perbedaan kurung panggil dan akses dictionary serta memberikan contoh perbaikan. Pembelajar menyatakan masih bingung, meminta melanjutkan besok, dan meminta push checkpoint hari ini.
+
+Pemeriksaan aktual dari root proyek:
+
+```powershell
+.\.venv\Scripts\python.exe -B main.py
+```
+
+Exit code 1. Program mencetak True, kemudian traceback menunjuk pemanggilan `open_case(case_a)` pada baris 21 dan kondisi pada baris 5. Error aktual: `TypeError: 'function' object is not subscriptable`. Baris assignment yang salah belum tercapai karena kondisi lebih dahulu gagal.
+
+Source disimpan persis sebagai pekerjaan pembelajar yang belum selesai; pendamping tidak memperbaiki atau merapikannya. README berbahasa Inggris dan keadaan terkini pada catatan ini diperbarui untuk menyatakan error aktual dan menunjuk commit runnable sebelumnya `bbc364add1bc2ad767175565e5f2b78591bb3af1`. Tidak memasang dependency atau menambahkan tes permanen. Tidak ada klaim bahwa tes aplikasi lulus.
+
+Checkpoint ini diminta dipublikasikan sebagai pekerjaan yang belum selesai. Commit mencakup `main.py`, `README.md`, dan `docs/PROGRESS.md`. Hasil push dilaporkan setelah perbandingan SHA lokal dengan main langsung dari remote dan pemeriksaan working tree. Tidak membuat commit tambahan hanya untuk menuliskan SHA commit checkpoint itu sendiri.
