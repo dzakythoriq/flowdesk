@@ -6,7 +6,7 @@ FlowDesk is designed to track cases through explicit status transitions, automat
 
 ## Development Status
 
-**Work in progress.** The current checkpoint adds a boolean status predicate, `is_new_case(case_data)`. Its integration into `open_case` is incomplete: the script currently stops with a `TypeError` caused by dictionary-style access on a function. The [last verified runnable checkpoint](https://github.com/dzakythoriq/flowdesk/commit/bbc364add1bc2ad767175565e5f2b78591bb3af1) supports two independent in-memory cases, guarded opening from `NEW` to `OPEN`, and status retrieval for conditional checks. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
+**Early development.** The in-memory script supports two independent sample cases, status display and retrieval, and guarded opening from `NEW` to `OPEN`. `open_case(case_data)` uses the boolean result returned by `is_new_case(case_data)` to decide whether to update the supplied dictionary. It returns `True` after a successful opening and `False` when the attempt is rejected. Other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
 
 ## Planned Capabilities
 
@@ -75,14 +75,23 @@ Run the current case-state script from the repository root:
 .\.venv\Scripts\python.exe main.py
 ```
 
-The current script prints `True` for the initial `is_new_case(case_a)` check, then stops at the first opening attempt. Abbreviated output:
+The sample stores and prints the operation results of two opening attempts on the first case: the first succeeds and the second is rejected. It then attempts to open that case once more, displays both case statuses, opens the second case, and checks the first case's returned status before printing a readiness message:
 
 ```text
+This case is new
 True
-TypeError: 'function' object is not subscriptable
+This case is not new
+False
+This case is not new
+OPEN
+NEW
+This case is new
+OPEN
+OPEN
+This case is ready for processing
 ```
 
-The pending integration must call the predicate with parentheses and update the supplied case dictionary. The current checkpoint preserves this unfinished state; it is not a successful execution of the opening workflow.
+`is_new_case(case_data)` returns a boolean without printing or modifying the case. `open_case(case_data)` uses that predicate directly as its condition, updates the supplied dictionary only when allowed, and returns whether that opening attempt succeeded. Repeated attempts on an `OPEN` case leave it unchanged. The sample stores the first two operation results in `opening_succeeded` and `second_opening_succeeded`. These booleans describe individual attempts; the case dictionary separately stores the current status.
 
 Sample data is held in memory and recreated on each run.
 
