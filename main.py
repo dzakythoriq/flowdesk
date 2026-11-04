@@ -3,11 +3,9 @@ def show_status(case_data):
 
 def open_case(case_data):
     if is_new_case(case_data):
-        print("This case is new")
         case_data["status"] = "OPEN"
         return True
     else:
-        print("This case is not new")
         return False    
 
 def get_status(case_data):
@@ -16,13 +14,31 @@ def get_status(case_data):
 def is_new_case(case_data):
     return case_data["status"] == "NEW"
 
-case_a = {"title": "Review sample invoice", "description": "Fictional invoice", "status": "NEW"}
-case_b = {"title": "Another sample invoice", "description": "Imaginary invoice", "status": "NEW"}
+def create_case(title,description):
+    case_data = {
+        "title": title,
+        "description": description,
+        "status": "NEW"
+    }
+    return case_data
+
+case_a = create_case("Review sample invoice", "Fictional invoice")
+case_b = create_case("Check sample delivery", "Fictional delivery")
+
+print(case_a)
+print(case_b)
 
 opening_succeeded = open_case(case_a)
-print(opening_succeeded)
+if opening_succeeded:
+    print("The case was opened successfully")
+else:
+    print("The case was not opened successfully")
+
 second_opening_succeeded = open_case(case_a)
-print(second_opening_succeeded)
+if second_opening_succeeded:
+    print("The case was opened successfully")
+else:
+    print("The case was not opened successfully")
 
 open_case(case_a)
 show_status(case_a)

@@ -6,7 +6,7 @@ FlowDesk is designed to track cases through explicit status transitions, automat
 
 ## Development Status
 
-**Early development.** The in-memory script supports two independent sample cases, status display and retrieval, and guarded opening from `NEW` to `OPEN`. `open_case(case_data)` uses the boolean result returned by `is_new_case(case_data)` to decide whether to update the supplied dictionary. It returns `True` after a successful opening and `False` when the attempt is rejected. Other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
+**Early development.** `create_case(title, description)` creates an independent in-memory case dictionary with the supplied fields and an initial status of `NEW`. The script also supports status display and retrieval, and guarded opening from `NEW` to `OPEN`. `open_case(case_data)` uses the boolean result returned by `is_new_case(case_data)` to decide whether to update the supplied dictionary. It returns `True` after a successful opening and `False` when the attempt is rejected. Other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
 
 ## Planned Capabilities
 
@@ -75,25 +75,23 @@ Run the current case-state script from the repository root:
 .\.venv\Scripts\python.exe main.py
 ```
 
-The sample stores and prints the operation results of two opening attempts on the first case: the first succeeds and the second is rejected. It then attempts to open that case once more, displays both case statuses, opens the second case, and checks the first case's returned status before printing a readiness message:
+The sample creates two cases with different titles and descriptions through `create_case`, then prints both dictionaries before any opening attempt. It stores the operation results of two opening attempts on the first case and uses a conditional in the caller to print a success or rejection message for each result. It then attempts to open that case once more, displays both case statuses, opens the second case, and checks the first case's returned status before printing a readiness message:
 
 ```text
-This case is new
-True
-This case is not new
-False
-This case is not new
+{'title': 'Review sample invoice', 'description': 'Fictional invoice', 'status': 'NEW'}
+{'title': 'Check sample delivery', 'description': 'Fictional delivery', 'status': 'NEW'}
+The case was opened successfully
+The case was not opened successfully
 OPEN
 NEW
-This case is new
 OPEN
 OPEN
 This case is ready for processing
 ```
 
-`is_new_case(case_data)` returns a boolean without printing or modifying the case. `open_case(case_data)` uses that predicate directly as its condition, updates the supplied dictionary only when allowed, and returns whether that opening attempt succeeded. Repeated attempts on an `OPEN` case leave it unchanged. The sample stores the first two operation results in `opening_succeeded` and `second_opening_succeeded`. These booleans describe individual attempts; the case dictionary separately stores the current status.
+`is_new_case(case_data)` returns a boolean without printing or modifying the case. `open_case(case_data)` uses that predicate directly as its condition, updates the supplied dictionary only when allowed, and returns whether that opening attempt succeeded. Repeated attempts on an `OPEN` case leave it unchanged. The sample stores the first two operation results in `opening_succeeded` and `second_opening_succeeded`. These booleans describe individual attempts; the case dictionary separately stores the current status. `open_case` does not print messages; the caller chooses how to present each result. A direct call still applies the opening rule even when its return value is not displayed.
 
-Sample data is held in memory and recreated on each run.
+`create_case` returns a new dictionary on every call without printing. Opening one case leaves the other case unchanged. Input validation, generated identifiers, and timestamps are not yet implemented. Sample data is held in memory and recreated on each run.
 
 A persistent automated test suite is not yet available.
 

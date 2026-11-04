@@ -8,6 +8,7 @@ Read README.md and docs/PROGRESS.md before proposing the next task. Read docs/SE
 
 - FlowDesk is a fictional case tracker for learning software engineering incrementally. The learner's long-term direction remains AI/ML engineering.
 - Communicate in natural Bahasa Indonesia. Give detailed, manageable steps and explain technical terms when first relevant. Do not use em dashes.
+- When the learner says "lanjut" on a different day or after a long break, first recap the previous work and concepts, the latest verified state, and unresolved confusion using actual source and progress notes. Then explain the next small task, its purpose, and concrete steps before asking the learner to write code. Do not jump directly into a new exercise or infer mastery from a successful run.
 - Explain the purpose, why it matters, how it works, a small example, its role in FlowDesk, and what the learner should be able to explain.
 - Do not infer mastery from academic achievements, prior projects, successful execution, or a command copied from chat.
 - Prefer a small exercise, prediction, pseudocode, or hint before a complete solution when that helps learning.
