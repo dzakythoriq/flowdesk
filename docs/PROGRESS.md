@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 4 November 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 5 November 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -33,7 +33,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- Checkpoint 4 November 2026: `create_case(title, description)` membuat dictionary terpisah berstatus NEW dan mengembalikannya tanpa mencetak. Kedua kasus sample dibuat melalui function ini. `open_case` memeriksa aturan, memperbarui status, dan mengembalikan boolean; pemanggil menentukan pesan. Sample sembilan baris dan independensi dictionary sudah diverifikasi. Validasi input, seluruh workflow, serta suite tes tersimpan belum tersedia. Pembelajar meminta publikasi kode, README, progres, dan preferensi rekap sesi pada AGENTS.md; periksa riwayat Git untuk SHA aktual checkpoint.
+- Checkpoint 5 November 2026: `create_case` memeriksa tipe title sebelum strip. Non-string ditolak dengan TypeError; string kosong setelah strip ditolak dengan ValueError; title valid disimpan rapi pada dictionary NEW. Pemanggil menangani kedua error dan melanjutkan program. Output sebelas baris, jalur penolakan, dan string numerik sudah diverifikasi. Validasi description, seluruh workflow, dan suite tes tersimpan belum tersedia. Pembelajar meminta publikasi checkpoint validasi; baca riwayat Git serta remote untuk commit aktual.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -69,15 +69,13 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Sesi dihentikan pada 4 November 2026 atas permintaan pembelajar untuk dilanjutkan besok. Pembelajar sudah menulis `create_case`, membuat dua dictionary terpisah melalui function tersebut, dan memisahkan pesan terminal dari `open_case`. Jangan mengulang implementasi yang sudah selesai.
+Checkpoint 5 November 2026 sudah mencakup validasi tipe title, normalisasi whitespace, penolakan hasil kosong, dan handler ValueError/TypeError di pemanggil. Jangan meminta implementasi ulang yang sudah selesai. Input sample tetap angka 123 untuk memperlihatkan penolakan tipe; jawaban tentang string "123" merupakan prediksi konseptual yang benar dan sudah didukung pemeriksaan sebelumnya.
 
-Saat melanjutkan, mulai dengan rekap sesuai preferensi yang sudah dicatat pada AGENTS.md. Tinjau bahwa `create_case` membuat dictionary baru, sedangkan `open_case` memodifikasi dictionary yang diberikan bila statusnya NEW. Hasil `create_case` adalah dictionary; hasil `open_case` adalah boolean. Keduanya tidak mencetak pesan.
+Saat melanjutkan, rekap perbedaan 123 sebagai int (TypeError), "123" sebagai string tidak kosong (diterima), dan "   " sebagai string yang kosong setelah strip (ValueError). Urutan tetap pemeriksaan tipe, normalisasi, pemeriksaan kosong, lalu pembuatan dictionary. Hasil run tidak dianggap penguasaan seluruh tipe data atau exception.
 
-Pembelajar menjawab dengan benar bahwa membuat case_c tidak mereset case_a, tetapi mengaitkannya dengan keberadaan `open_case(case_a)`. Perjelas bahwa OPEN adalah hasil pemanggilan sebelumnya; pembuatan dictionary baru tidak menyentuh dictionary lama, bukan karena baris pembukaan terus bekerja atau harus tetap ada untuk mempertahankan status. Skenario ini sudah diverifikasi tanpa mengubah source.
+Langkah kecil berikutnya dapat memperkenalkan pemeriksaan tipe description sesuai aturan proyek. Description belum divalidasi; jangan menambahkan aturan wajib tidak kosong tanpa memeriksa kebutuhan. ID, timestamp, history, persistence, dan API belum tersedia. Belum ada implementasi tambahan.
 
-Setelah peninjauan, langkah kecil berikutnya dapat memperkenalkan validasi title kosong pada pembuatan kasus. Validasi dan penanganan error belum diajarkan atau diimplementasikan. ID, timestamp, history, persistence, dan API juga belum tersedia. Jangan menambah fitur sebelum pembelajar melanjutkan sesi.
-
-Publikasi checkpoint 4 November diminta oleh pembelajar. Verifikasi hasil melalui riwayat Git, SHA remote, dan working tree; jangan meminta mengulang commit/push yang sudah berhasil. Tidak diperlukan commit tambahan hanya untuk menuliskan SHA checkpoint itu sendiri.
+Pembelajar meminta dokumentasi dan push checkpoint ini. Setelah hasil pengiriman dikonfirmasi, jangan meminta pengulangan commit/push yang sudah selesai. SHA aktual tersedia pada riwayat Git tanpa commit tambahan hanya untuk menuliskan SHA itu sendiri. Jika melanjutkan pada hari berbeda atau setelah jeda, mulai dengan rekap sesuai preferensi AGENTS.md.
 
 ## Batasan saat ini
 
@@ -381,3 +379,41 @@ Pendamping menjalankan satu pemeriksaan tambahan yang khusus menjawab skenario t
 Pembelajar meminta penjelasan jawaban, dokumentasi, dan push sebelum melanjutkan besok. Checkpoint mencakup main.py hasil tulisan pembelajar, README berbahasa Inggris dengan kemampuan aktual, progres, dan preferensi rekap saat kembali setelah jeda pada AGENTS.md. Catatan pembaruan memori tetap berada di folder memori lokal dan tidak menjadi isi repository.
 
 Source tidak diubah pendamping. Tidak memasang dependency atau menambahkan tes permanen. Setelah commit dan push, hasil diverifikasi dengan membandingkan SHA lokal terhadap main langsung dari remote dan memeriksa working tree. SHA checkpoint tersedia pada riwayat Git tanpa commit tambahan untuk mencatat dirinya sendiri.
+
+## Validasi title kosong dan penanganan error, 5 November 2026
+
+Pembelajar menambahkan pemeriksaan title kosong pada awal create_case dan memunculkan ValueError sebelum dictionary dibuat. Percobaan awal tanpa handler menghasilkan satu exception dan traceback yang menunjukkan jalur pemanggilan. Dibahas bahwa traceback bukan kumpulan error terpisah; raise menghentikan alur normal dan assignment hasil tidak selesai saat pemanggilan gagal.
+
+Pembelajar kemudian menambahkan blok try yang memanggil `create_case("", "This case has no title")` tanpa assignment, except ValueError as error yang mencetak pesan pendek, serta print completion di luar blok. Sample menghasilkan sebelas baris output dan berakhir dengan `Case creation failed: Title cannot be empty` serta `Validation check completed`.
+
+Pendamping membaca source dan menjalankan pemeriksa sementara melalui `.\.venv\Scripts\python.exe -B -`. Pemeriksaan memastikan source aktual menghasilkan output yang sama tanpa stderr/traceback, kasus valid sebelumnya tetap OPEN, title kosong memunculkan ValueError dengan pesan yang sesuai, dan title valid mengembalikan dictionary NEW tanpa stdout. Salinan AST di memori mengganti hanya title percobaan try menjadi valid; handler dilewati dan completion tetap dicetak. Source sebelum dan sesudah identik. Semua pemeriksaan lulus, exit code 0.
+
+README diperbarui dalam bahasa Inggris dengan validasi yang tersedia, penanganan error, dan output aktual. Batasan title berisi spasi saja dicatat sebagai langkah berikutnya. Tidak mengedit source, menambah dependency atau berkas tes permanen, membuat commit, atau melakukan push. Peninjauan alur input valid dalam try menjadi latihan berikutnya sebelum memperluas validasi.
+
+## Normalisasi title dan penolakan whitespace, 5 November 2026
+
+Pembelajar menambahkan `title = title.strip()` sebelum validasi. Prediksi bahwa spasi di tepi title valid tidak disimpan dan title berisi tiga spasi akan masuk handler sesuai dengan hasil aktual. Dijelaskan bahwa strip membersihkan nilai, assignment menyimpan hasil, if memeriksa, raise menolak, dan except menangani error. Source tetap hasil tulisan pembelajar.
+
+Pendamping membaca source tersimpan lalu menjalankan pemeriksa sementara melalui `.\.venv\Scripts\python.exe -B -`. Output sample cocok dengan sebelas baris laporan pembelajar. Pengujian tambahan memastikan string kosong, tiga spasi, dan tab/newline ditolak dengan ValueError yang sesuai. Input `  Review  invoice  ` disimpan sebagai `Review  invoice`: whitespace di tepi dibuang, dua spasi di tengah tetap ada, description dan status NEW dipertahankan, tanpa stdout dari create_case. Source sebelum dan sesudah identik. Seluruh pemeriksaan lulus, exit code 0.
+
+README diperbarui dalam bahasa Inggris dengan normalisasi title dan batas validasi yang tersedia. Tidak mengedit source, memasang dependency, menambahkan tes permanen, membuat commit, atau melakukan push. Latihan berikutnya belum diimplementasikan; peran assignment hasil strip perlu ditinjau sebelum validasi tambahan.
+
+## Validasi tipe title, 5 November 2026
+
+Pembelajar menambahkan pemeriksaan not isinstance(title, str) sebelum normalisasi dan memunculkan TypeError dengan pesan yang jelas. ValueError tetap digunakan untuk string yang kosong setelah strip. Pemanggil menambahkan handler TypeError dan memakai angka 123 sebagai input percobaan. Source tetap hasil tulisan pembelajar.
+
+Dibahas peran argumen pertama isinstance sebagai nilai yang diperiksa dan argumen kedua sebagai tipe acuan, perbedaan str dengan teks "str", serta angka 123 dengan string "123". Pembelajar dapat menjelaskan arti isinstance(title, str). Ini tidak dianggap penguasaan menyeluruh tipe data atau exception.
+
+Pendamping menjalankan pemeriksa sementara melalui `.\.venv\Scripts\python.exe -B -`. Output source cocok dengan sebelas baris laporan pembelajar dan berakhir dengan pesan `Title must be a string` serta completion. Input 123, None, dan dictionary ditolak dengan TypeError yang sesuai sebelum strip. String kosong dan tiga spasi ditolak dengan ValueError; string "123" tetap valid; title berlapis spasi disimpan rapi dengan whitespace di tengah dipertahankan. Operasi tidak mencetak stdout. Source sebelum dan sesudah identik. Seluruh pemeriksaan lulus, exit code 0.
+
+README diperbarui dalam bahasa Inggris dengan kedua jenis penolakan dan output aktual. Tidak mengedit source, memasang dependency, menambahkan tes permanen, membuat commit, atau melakukan push. Langkah berikutnya adalah peninjauan pemilihan jenis error sebelum validasi field berikutnya.
+
+## Checkpoint validasi title, 5 November 2026
+
+Pembelajar memprediksi dengan benar bahwa string "123" tidak menimbulkan error karena bertipe string. Penjelasan diperjelas: pemeriksaan tipe dilewati, hasil strip tetap tidak kosong, dan dictionary NEW dikembalikan. Kasus ini berbeda dari angka 123 yang dipakai pada sample tersimpan dan ditolak dengan TypeError. Tidak ada perubahan source diminta untuk mengganti sample menjadi string numerik.
+
+Atas permintaan push, pendamping membaca source, README, progres, dan keadaan Git. Source identik dengan versi yang sudah lulus pemeriksaan pada milestone sebelumnya dalam sesi ini. Pemeriksaan tersebut mencakup sample sebelas baris, penolakan non-string dengan TypeError, penolakan string kosong/whitespace dengan ValueError, penerimaan string "123", normalisasi title, serta tidak adanya perubahan source. Tidak mengulang tes karena tidak ada perubahan source baru setelah pemeriksaan itu.
+
+README tetap berbahasa Inggris dan menjelaskan aturan title serta contoh angka dibanding string numerik. Progres menyimpan keadaan terakhir dan langkah berikutnya yang belum diimplementasikan. Checkpoint mencakup main.py hasil tulisan pembelajar, README.md, dan docs/PROGRESS.md. Tidak memasang dependency atau menambahkan tes permanen.
+
+Commit dan push dilakukan sesuai permintaan langsung pembelajar. Hasil pengiriman dikonfirmasi melalui perbandingan SHA lokal dengan branch main langsung dari remote dan pemeriksaan working tree. Tidak membuat commit tambahan untuk mencatat SHA checkpoint itu sendiri.

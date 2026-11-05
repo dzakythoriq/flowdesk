@@ -15,6 +15,14 @@ def is_new_case(case_data):
     return case_data["status"] == "NEW"
 
 def create_case(title,description):
+    if not isinstance(title, str):
+        raise TypeError("Title must be a string")
+    
+    title = title.strip()
+    
+    if title == "":
+        raise ValueError("Title cannot be empty")
+
     case_data = {
         "title": title,
         "description": description,
@@ -22,7 +30,7 @@ def create_case(title,description):
     }
     return case_data
 
-case_a = create_case("Review sample invoice", "Fictional invoice")
+case_a = create_case("  Review sample invoice  ", "Fictional invoice")
 case_b = create_case("Check sample delivery", "Fictional delivery")
 
 print(case_a)
@@ -51,3 +59,12 @@ show_status(case_b)
 status_a = get_status(case_a)
 if status_a == "OPEN":
     print("This case is ready for processing")
+    
+try:
+    create_case(123, "Fictional invoice")
+except ValueError as error:
+    print("Case creation failed:", error)
+except TypeError as error:
+    print("Case creation failed:", error)
+    
+print("Validation check completed")
