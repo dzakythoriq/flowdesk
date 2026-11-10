@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 5 November 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 10 November 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -33,7 +33,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- Checkpoint 5 November 2026: `create_case` memeriksa tipe title sebelum strip. Non-string ditolak dengan TypeError; string kosong setelah strip ditolak dengan ValueError; title valid disimpan rapi pada dictionary NEW. Pemanggil menangani kedua error dan melanjutkan program. Output sebelas baris, jalur penolakan, dan string numerik sudah diverifikasi. Validasi description, seluruh workflow, dan suite tes tersimpan belum tersedia. Pembelajar meminta publikasi checkpoint validasi; baca riwayat Git serta remote untuk commit aktual.
+- Pada 10 November 2026, `create_case(title, description="")` memeriksa title dan tipe description. Description opsional dengan default string kosong; deskripsi yang diberikan tetap dipakai dan non-string ditolak dengan TypeError. Sample sebelas baris dengan pemanggilan title saja sudah dijalankan dan diverifikasi. Checkpoint 10 November mencakup validasi dan nilai default description; pembelajar meminta publikasi. Case ID, seluruh workflow, dan suite tes tersimpan belum tersedia.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -69,13 +69,11 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Checkpoint 5 November 2026 sudah mencakup validasi tipe title, normalisasi whitespace, penolakan hasil kosong, dan handler ValueError/TypeError di pemanggil. Jangan meminta implementasi ulang yang sudah selesai. Input sample tetap angka 123 untuk memperlihatkan penolakan tipe; jawaban tentang string "123" merupakan prediksi konseptual yang benar dan sudah didukung pemeriksaan sebelumnya.
+Pada 10 November 2026, pembelajar sudah menulis default description `""` dan berhasil memanggil `create_case("Review invoice")`. Kasus yang diberi deskripsi tetap memakai teks yang diberikan. Key description tetap ada di kedua jalur. Jangan meminta implementasi ulang validasi atau default yang sudah selesai.
 
-Saat melanjutkan, rekap perbedaan 123 sebagai int (TypeError), "123" sebagai string tidak kosong (diterima), dan "   " sebagai string yang kosong setelah strip (ValueError). Urutan tetap pemeriksaan tipe, normalisasi, pemeriksaan kosong, lalu pembuatan dictionary. Hasil run tidak dianggap penguasaan seluruh tipe data atau exception.
+Tinjau bahwa argumen yang dihilangkan memakai default, sementara argumen eksplisit tetap melewati pemeriksaan tipe. Langkah kecil berikutnya dapat membahas kebutuhan `case_id` agar kasus yang judulnya sama tetap bisa dibedakan. Baca aturan ID di handoff sebelum memberi latihan. Pembuatan ID belum diimplementasikan; timestamp, history, persistence, dan API juga belum tersedia.
 
-Langkah kecil berikutnya dapat memperkenalkan pemeriksaan tipe description sesuai aturan proyek. Description belum divalidasi; jangan menambahkan aturan wajib tidak kosong tanpa memeriksa kebutuhan. ID, timestamp, history, persistence, dan API belum tersedia. Belum ada implementasi tambahan.
-
-Pembelajar meminta dokumentasi dan push checkpoint ini. Setelah hasil pengiriman dikonfirmasi, jangan meminta pengulangan commit/push yang sudah selesai. SHA aktual tersedia pada riwayat Git tanpa commit tambahan hanya untuk menuliskan SHA itu sendiri. Jika melanjutkan pada hari berbeda atau setelah jeda, mulai dengan rekap sesuai preferensi AGENTS.md.
+Jika sesi dilanjutkan pada hari berbeda atau setelah jeda, mulai dengan rekap sesuai AGENTS.md. Pembelajar meminta push checkpoint description sebelum masuk ke case ID. Lihat riwayat Git untuk SHA checkpoint aktual; setelah push terverifikasi, jangan meminta pengulangan publikasi.
 
 ## Batasan saat ini
 
@@ -417,3 +415,21 @@ Atas permintaan push, pendamping membaca source, README, progres, dan keadaan Gi
 README tetap berbahasa Inggris dan menjelaskan aturan title serta contoh angka dibanding string numerik. Progres menyimpan keadaan terakhir dan langkah berikutnya yang belum diimplementasikan. Checkpoint mencakup main.py hasil tulisan pembelajar, README.md, dan docs/PROGRESS.md. Tidak memasang dependency atau menambahkan tes permanen.
 
 Commit dan push dilakukan sesuai permintaan langsung pembelajar. Hasil pengiriman dikonfirmasi melalui perbandingan SHA lokal dengan branch main langsung dari remote dan pemeriksaan working tree. Tidak membuat commit tambahan untuk mencatat SHA checkpoint itu sendiri.
+
+## Validasi tipe description, 10 November 2026
+
+Pembelajar membedakan aturan di dalam create_case dari input percobaan di dalam try. Setelah menambahkan pemeriksaan tipe description, sample memanggil `print(create_case("Review invoice", ""))` dan menampilkan dictionary NEW dengan description kosong, diikuti pesan completion. Title tetap wajib; description boleh kosong. Signature masih meminta dua argumen.
+
+Pendamping membaca source dan menjalankan pemeriksa sementara melalui `.\.venv\Scripts\python.exe -B -`. Sample sebelas baris cocok dengan laporan. Pemeriksaan memastikan string kosong diterima, deskripsi teks sebelumnya dipertahankan, dan angka menimbulkan TypeError dengan pesan `Description must be a string`. Salinan AST di memori mengganti hanya argumen description pada percobaan menjadi 123; handler mencetak penolakan lalu completion. Source identik sebelum dan sesudah; exit code 0.
+
+README berbahasa Inggris diperbarui sesuai perilaku aktual. Tidak mengedit source, menambah dependency atau tes permanen, membuat commit, atau melakukan push. Nilai default description menjadi latihan berikutnya dan belum diimplementasikan.
+
+## Nilai default description, 10 November 2026
+
+Pembelajar mengubah signature menjadi `create_case(title, description="")` dan menghilangkan argumen description pada percobaan terakhir. Pemeriksaan tipe tetap berada di dalam function. Pembelajar mengirim output yang menunjukkan kasus baru berstatus NEW dengan key description berisi string kosong.
+
+Pendamping membaca source dan menjalankan `.\.venv\Scripts\python.exe -B main.py`. Exit code 0; sebelas baris output cocok dengan laporan. Dua kasus awal mempertahankan deskripsi yang diberikan; pemanggilan title saja menghasilkan description kosong dan diikuti `Validation check completed`. Tidak mengulang pengujian invalid yang sudah dilakukan pada perubahan sebelumnya karena pemeriksaan tipe tidak berubah.
+
+README berbahasa Inggris diperbarui sesuai signature opsional dan contoh aktual. Source tetap hasil tulisan pembelajar; tidak menambah dependency, tes permanen, commit, atau push. Case ID masih berupa langkah yang direncanakan.
+
+Pembelajar kemudian meminta commit dan push sebelum langkah case ID. Perubahan yang disertakan adalah source hasil tulisan pembelajar, README, dan catatan progres. Source tidak berubah sejak eksekusi yang sudah lulus di atas. Hasil publikasi diperiksa melalui kecocokan SHA lokal dan remote serta status working tree.
