@@ -6,16 +6,11 @@ FlowDesk is designed to track cases through explicit status transitions, automat
 
 ## Development Status
 
-**Early development.** `create_case(title, description="")` requires a string title, raising `TypeError` for other types. It trims leading and trailing whitespace and rejects a blank result with `ValueError`. The description is optional and defaults to an empty string. When supplied, it must be a string. Valid input produces an independent in-memory case dictionary with the normalized title, supplied description, and an initial status of `NEW`. The script also supports status display and retrieval, and guarded opening from `NEW` to `OPEN`. `open_case(case_data)` uses the boolean result returned by `is_new_case(case_data)` to decide whether to update the supplied dictionary. It returns `True` after a successful opening and `False` when the attempt is rejected. Other starting statuses remain unchanged. The complete workflow, interactive CLI, event history, persistence layer, and API are not yet implemented.
+**Early development.** `create_case(title, description="")` requires a string title, raising `TypeError` for other types. It trims leading and trailing whitespace and rejects a blank result with `ValueError`. The description is optional and defaults to an empty string. When supplied, it must be a string. Valid input produces an independent in-memory case dictionary with a generated `CASE-` prefixed UUIDv4, the normalized title, the supplied description, and an initial status of `NEW`. The script supports status display and retrieval and validates transitions against the workflow table below. `transition_case(case_data, new_status)` returns `True` after an allowed update and `False` when the attempt is rejected, leaving the case unchanged. `open_case(case_data)` delegates to that function with `OPEN` as the target. Each case records UTC creation and update timestamps and an in-memory history of creation and successful status changes. The terminal menu supports creating and listing cases, retrieving case details, changing status, and viewing event history. Details, status changes, and history are accessed by case ID. Case creation saves the case and its initial event together in SQLite. The terminal menu loads saved cases and their event history from SQLite at startup. Successful status changes and their events are also persisted together. The read-only API provides a case list and case details from the same SQLite database.
 
 ## Planned Capabilities
 
-- Create cases with an automatically generated ID, title, description, and timestamps.
-- List cases and retrieve individual case details by ID.
-- Validate status changes against explicit workflow rules.
-- Record case creation and successful status changes in an event history.
-- Persist case data locally using SQLite.
-- Provide a CLI and, subsequently, a REST API backed by the same core operations.
+- Add case history and write operations to the API.
 
 A typical workflow starts with an operator creating a case such as `Review sample invoice`, opening it, starting work, and eventually resolving and closing it. Work can move to `BLOCKED` when an issue prevents progress, then return to `IN_PROGRESS` once the issue is cleared. All sample cases use fictional data.
 
@@ -37,7 +32,7 @@ NEW -> OPEN -> IN_PROGRESS -> RESOLVED -> CLOSED
 | `CLOSED` | None |
 | `CANCELLED` | None |
 
-A rejected transition must leave the case's status, `updated_at`, and event history unchanged. Once persistence is implemented, case creation and status updates must be saved in the same database transaction as their corresponding history events.
+A rejected transition leaves the case's status, `updated_at`, and event history unchanged. Case creation and each successful status change are stored in the same transaction as the corresponding event. If an event cannot be saved, its case creation or status update is rolled back.
 
 ## Data Model
 
@@ -53,9 +48,9 @@ A rejected transition must leave the case's status, `updated_at`, and event hist
 | Component | Technology | Status |
 |---|---|---|
 | Runtime | Python 3.14 | Environment configured |
-| Persistence | SQLite via `sqlite3` | Planned |
-| API | FastAPI | Planned |
-| Automated testing | pytest | Planned |
+| Persistence | SQLite via `sqlite3` | Implemented for case creation, status changes, and history |
+| API | FastAPI | Case listing and details implemented |
+| Automated testing | pytest | Persistence, transition validation, and rollback covered |
 
 ## Setup
 
@@ -69,33 +64,44 @@ See the [setup guide](docs/SETUP.md) for local environment configuration. If `.v
 
 The interpreter and pip paths should point to this project's `.venv` directory. The virtual environment check should return `True`.
 
-Run the current case-state script from the repository root:
+Start the terminal menu from the repository root. It initializes the database if needed:
 
 ```powershell
 .\.venv\Scripts\python.exe main.py
 ```
 
-The sample creates two cases with different titles and descriptions through `create_case`, then prints both dictionaries before any opening attempt. It stores the operation results of two opening attempts on the first case and uses a conditional in the caller to print a success or rejection message for each result. It then attempts to open that case once more, displays both case statuses, opens the second case, and checks the first case's returned status before printing a readiness message. The first title includes outer spaces that are removed before storage. A final example omits the description and prints the newly created case with its default empty description. Its caller also handles validation errors with `try/except`:
+Choose `1` to create a case and `2` to list cases. Enter a case ID in options `3`, `4`, or `5` to view details, change status, or view event history, respectively. Choose `0` to exit. Press Enter at the description prompt to leave it empty. The menu reports a blank title and returns to the choices without storing a case. A valid creation prints its generated ID; the list shows each ID, current status, and title.
 
 ```text
-{'title': 'Review sample invoice', 'description': 'Fictional invoice', 'status': 'NEW'}
-{'title': 'Check sample delivery', 'description': 'Fictional delivery', 'status': 'NEW'}
-The case was opened successfully
-The case was not opened successfully
-OPEN
-NEW
-OPEN
-OPEN
-This case is ready for processing
-{'title': 'Review invoice', 'description': '', 'status': 'NEW'}
-Validation check completed
+Choose an option: 1
+Title: Review sample invoice
+Description (optional):
+Created: CASE-<uuid>
 ```
 
-`is_new_case(case_data)` returns a boolean without printing or modifying the case. `open_case(case_data)` uses that predicate directly as its condition, updates the supplied dictionary only when allowed, and returns whether that opening attempt succeeded. Repeated attempts on an `OPEN` case leave it unchanged. The sample stores the first two operation results in `opening_succeeded` and `second_opening_succeeded`. These booleans describe individual attempts; the case dictionary separately stores the current status. `open_case` does not print messages; the caller chooses how to present each result. A direct call still applies the opening rule even when its return value is not displayed.
+`transition_case` reads the current status, looks up the allowed destinations, and updates only the supplied case when the target is allowed. `open_case(case_data)` forwards the result of `transition_case(case_data, "OPEN")`. Neither function prints; the caller chooses how to present the result. The case dictionary stores the current status separately from the boolean result of each attempt. Its `history` list starts with `CASE_CREATED`; each allowed transition appends one `STATUS_CHANGED` event with the previous and new status, optional reason, and UTC timestamp. The case’s `updated_at` matches its latest event time.
 
-`create_case` returns a new dictionary for each valid call without printing. It checks the title type before applying `title.strip()`, preserving whitespace between words. Non-string titles raise `TypeError`; empty or whitespace-only strings raise `ValueError`, both before dictionary creation. For example, the integer `123` is rejected, while the non-blank string `"123"` is accepted. The caller handles each error type with a corresponding `except` clause and displays a short message. Non-string descriptions also raise `TypeError`. Call `create_case(title)` to use the default empty description, or pass a string as the second argument to supply one. Generated identifiers and timestamps are not yet implemented. Opening one case leaves the other case unchanged. Sample data is held in memory and recreated on each run.
+`create_case` returns a new dictionary for each valid call without printing. It checks the title type before applying `title.strip()`, preserving whitespace between words. Non-string titles raise `TypeError`; empty or whitespace-only strings raise `ValueError`, both before dictionary creation. For example, the integer `123` is rejected, while the non-blank string `"123"` is accepted. The caller handles each error type with a corresponding `except` clause and displays a short message. Non-string descriptions also raise `TypeError`. Call `create_case(title)` to use the default empty description, or pass a string as the second argument to supply one. Opening one case leaves the other case unchanged. Saved cases, current statuses, and event history are available when FlowDesk is reopened.
 
-A persistent automated test suite is not yet available.
+## Run the API locally
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install fastapi uvicorn
+.\.venv\Scripts\python.exe -m uvicorn api:app --reload
+```
+
+Open [the case list](http://127.0.0.1:8000/cases) to retrieve each case's ID, title, and current status. Request `GET /cases/{case_id}` for one case's details, including its description and timestamps. An unknown ID returns `404 Not Found`. Both endpoints are available in the [interactive API documentation](http://127.0.0.1:8000/docs).
+
+## Tests
+
+Install pytest in the project environment and run the tests from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install pytest
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+The tests cover reloading a saved status and its event history, rejecting an invalid transition, and rolling back a status update when its event cannot be saved. The persistence tests use temporary SQLite databases.
 
 ## Scope
 

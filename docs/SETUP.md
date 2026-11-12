@@ -99,6 +99,38 @@ Perintah di atas adalah catatan konfigurasi awal yang sudah dilakukan, bukan lan
 - Opsi `-u` mengatur upstream, yaitu branch remote yang menjadi pasangan branch lokal. Setelah itu Git dapat melaporkan apakah branch lokal sudah sinkron, lebih maju, atau tertinggal dibanding catatan remote terakhir.
 - `git ls-remote origin refs/heads/main` membaca SHA branch langsung dari GitHub; bandingkan dengan `git rev-parse HEAD` untuk memeriksa hasil push.
 
+## Menjalankan menu terminal
+
+Dari root proyek, jalankan perintah berikut. Menu menyiapkan skema SQLite saat diperlukan:
+
+```powershell
+.\.venv\Scripts\python.exe main.py
+```
+
+Pilih `1` untuk membuat kasus atau `2` untuk melihat daftar. Gunakan ID kasus pada pilihan `3` untuk melihat detail, `4` untuk mengubah status, atau `5` untuk melihat riwayat. Pilih `0` untuk keluar. Deskripsi boleh dibiarkan kosong dengan menekan Enter. Pembuatan kasus dan event pertamanya disimpan di SQLite. Kasus yang sudah tersimpan dimuat kembali saat menu dibuka. Perubahan status yang berhasil dan event-nya juga tersimpan bersama di SQLite dan dimuat saat aplikasi dibuka ulang.
+
+## Menjalankan API lokal
+
+Dari root proyek, pasang paket API di environment proyek dan jalankan server:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install fastapi uvicorn
+.\.venv\Scripts\python.exe -m uvicorn api:app --reload
+```
+
+Biarkan server berjalan dan buka [daftar kasus](http://127.0.0.1:8000/cases) atau [dokumentasi interaktif](http://127.0.0.1:8000/docs). Gunakan `GET /cases/{case_id}` dengan ID dari daftar untuk melihat detail. Tekan Ctrl+C di terminal server untuk berhenti.
+
+## Menjalankan tes
+
+Pasang pytest di environment proyek sekali, lalu jalankan tes dari root proyek:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install pytest
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Tes penyimpanan menggunakan database sementara yang disiapkan oleh pytest.
+
 ## Dokumentasi setelah milestone
 
 Perbarui `docs/PROGRESS.md` dengan hasil aktual, konsep yang perlu dilatih, dan satu langkah berikutnya. Perbarui README ketika kemampuan aplikasi berubah. Dokumentasi tidak boleh menyebut fitur atau tes berhasil jika belum diimplementasikan atau dijalankan.

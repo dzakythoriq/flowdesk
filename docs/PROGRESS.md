@@ -1,6 +1,6 @@
 # Progres dan konteks FlowDesk
 
-Terakhir diperbarui: 10 November 2026, zona waktu Asia/Jakarta.
+Terakhir diperbarui: 13 November 2026, zona waktu Asia/Jakarta.
 
 ## Cara menggunakan catatan ini
 
@@ -33,7 +33,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- Pada 10 November 2026, `create_case(title, description="")` memeriksa title dan tipe description. Description opsional dengan default string kosong; deskripsi yang diberikan tetap dipakai dan non-string ditolak dengan TypeError. Sample sebelas baris dengan pemanggilan title saja sudah dijalankan dan diverifikasi. Checkpoint 10 November mencakup validasi dan nilai default description; pembelajar meminta publikasi. Case ID, seluruh workflow, dan suite tes tersimpan belum tersedia.
+- Per 13 November 2026, FlowDesk memiliki ID otomatis, lookup di memori, aturan transisi, riwayat, timestamp UTC, dan menu CLI untuk membuat, mendaftar, melihat detail, mengubah status, melihat riwayat, dan keluar. Judul kosong ditolak tanpa penyimpanan. ID kasus, pilihan menu, dan status tujuan yang tidak dikenal ditangani. Menu menyimpan kasus dan event pembuatan ke SQLite. Saat mulai, menu memuat kasus dan riwayatnya dari SQLite. Perubahan status dan event-nya juga tersimpan dalam satu transaksi. API sudah menyediakan GET /cases dan GET /cases/{case_id}. Checkpoint sebelum pekerjaan CLI, SQLite, dan API adalah `574b28f`.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -69,16 +69,12 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Pada 10 November 2026, pembelajar sudah menulis default description `""` dan berhasil memanggil `create_case("Review invoice")`. Kasus yang diberi deskripsi tetap memakai teks yang diberikan. Key description tetap ada di kedua jalur. Jangan meminta implementasi ulang validasi atau default yang sudah selesai.
-
-Tinjau bahwa argumen yang dihilangkan memakai default, sementara argumen eksplisit tetap melewati pemeriksaan tipe. Langkah kecil berikutnya dapat membahas kebutuhan `case_id` agar kasus yang judulnya sama tetap bisa dibedakan. Baca aturan ID di handoff sebelum memberi latihan. Pembuatan ID belum diimplementasikan; timestamp, history, persistence, dan API juga belum tersedia.
-
-Jika sesi dilanjutkan pada hari berbeda atau setelah jeda, mulai dengan rekap sesuai AGENTS.md. Pembelajar meminta push checkpoint description sebelum masuk ke case ID. Lihat riwayat Git untuk SHA checkpoint aktual; setelah push terverifikasi, jangan meminta pengulangan publikasi.
+Pembuatan kasus, pemuatan ulang, dan transaksi perubahan status sudah terverifikasi. Tiga tes pytest lulus untuk pemuatan ulang, transisi ilegal, dan rollback. Respons pilihan menu tidak dikenal sudah terverifikasi. GET /cases dan GET /cases/{case_id} sudah terverifikasi. Langkah berikutnya adalah GET /cases/{case_id}/history. Operasi tulis, tes API permanen, dan Postman menyusul.
 
 ## Batasan saat ini
 
-- Belum ada suite tes aplikasi yang disimpan di repository. Pemeriksaan sementara sudah menjalankan dua input status pada kode yang sama tanpa mengubah source file.
-- Database, API, pytest, dan Postman belum menjadi bagian dari implementasi.
+- Tes otomatis mencakup pemuatan kembali status dan riwayat, penolakan transisi, dan rollback. Pilihan menu yang tidak dikenal menampilkan Invalid option. dan kembali ke menu.
+- Database SQLite sudah menyimpan pembuatan dan perubahan status beserta event-nya. API saat ini menyediakan daftar dan detail kasus. Riwayat lewat API, operasi tulis, tes API permanen, dan Postman masih tertunda.
 - Setup menggunakan interpreter environment secara eksplisit. Aktivasi terminal belum diperlukan untuk menjalankan pemeriksaan.
 
 ## Revisi presentasi repository, 15 Oktober 2026
@@ -433,3 +429,83 @@ Pendamping membaca source dan menjalankan `.\.venv\Scripts\python.exe -B main.py
 README berbahasa Inggris diperbarui sesuai signature opsional dan contoh aktual. Source tetap hasil tulisan pembelajar; tidak menambah dependency, tes permanen, commit, atau push. Case ID masih berupa langkah yang direncanakan.
 
 Pembelajar kemudian meminta commit dan push sebelum langkah case ID. Perubahan yang disertakan adalah source hasil tulisan pembelajar, README, dan catatan progres. Source tidak berubah sejak eksekusi yang sudah lulus di atas. Hasil publikasi diperiksa melalui kecocokan SHA lokal dan remote serta status working tree.
+
+## Case ID dan pencarian di memori, 12 November 2026
+
+Pembelajar menambahkan UUIDv4 berawalan CASE- pada dictionary hasil create_case, lalu membuat indeks dua kasus berdasarkan ID. Output yang dilaporkan dimulai dengan `Found: Check sample delivery`. Cetakan percobaan UUID di akhir source masih ada. Pembelajar meminta penjelasan tentang alur pencarian dan kegunaannya, serta progres lebih cepat menuju MVP.
+
+Pendamping membaca source dan menjalankan pemeriksaan sementara melalui `.\.venv\Scripts\python.exe -B -`. Pemeriksaan memastikan lookup mengembalikan dictionary kasus B yang sama, kasus berjudul sama memperoleh ID berbeda, setiap ID yang diuji berformat CASE- dengan UUIDv4 lengkap, dan perubahan status mempertahankan ID. Exit code 0; source sebelum dan sesudah identik. Tidak ada berkas tes permanen, commit, atau push baru.
+
+## Tabel transisi dan delegasi open_case, 12 November 2026
+
+Pembelajar menambahkan aturan transisi dari handoff, `transition_case(case_data, new_status)`, dan membuat `open_case` meneruskan hasil `transition_case(case_data, "OPEN")`. Cetakan UUID percobaan di akhir sudah diganti dengan pengujian transisi kasus B hasil lookup. Sample berakhir True, False, IN_PROGRESS sesuai laporan.
+
+Pemeriksa sementara dijalankan melalui `.\.venv\Scripts\python.exe -B -` dan memeriksa sample, referensi lookup, 64 pasangan status awal/tujuan termasuk UNKNOWN, serta pembukaan berhasil dan pembukaan ulang ditolak. Pada transisi yang ditolak, dictionary tidak berubah; ID tetap sama saat diterima. Exit code 0; source identik sebelum dan sesudah. README diselaraskan dengan aturan yang sudah tersedia. Tidak menambah tes permanen, commit, atau push. History menjadi tugas berikutnya.
+
+## Riwayat per kasus dan timestamp, 12 November 2026
+
+Pembelajar menambahkan helper make_event, identitas event, waktu UTC, dan history di dalam dictionary kasus. Pembuatan mencatat CASE_CREATED; transisi valid memperbarui status dan updated_at sekaligus menambah STATUS_CHANGED. `reason` opsional. Percobaan ditolak keluar sebelum pembaruan. Sample berakhir dengan True, False, IN_PROGRESS, dan History: 3 -> 3.
+
+Pemeriksa sementara dijalankan melalui `.\.venv\Scripts\python.exe -B -`. Exit code 0. Pemeriksaan memastikan urutan ketiga event, hubungan event dengan case_id, ID event berbeda, waktu UTC, alasan yang diberikan, created_at yang tetap, updated_at yang cocok dengan event terakhir, dan seluruh dictionary tidak berubah setelah penolakan. Source identik sebelum dan sesudah. README diperbarui; belum ada tes permanen, commit, atau push. Menu CLI menjadi langkah berikutnya.
+
+## Menu terminal dasar, 12 November 2026
+
+Pembelajar menambahkan run_cli dengan pilihan buat kasus, daftar kasus, dan keluar. Menu menyimpan dictionary ber-key case_id, menangani judul kosong, dan dibuka oleh entry point `if __name__ == "__main__"`. Source tetap hasil tulisan pembelajar.
+
+Pendamping menjalankan verifikasi sementara melalui `.\.venv\Scripts\python.exe -B -` dengan input terarah. Lulus: daftar awal kosong, judul kosong ditolak dan daftar tetap kosong, kasus valid muncul dengan ID yang sama dan status NEW, pilihan tidak dikenal ditangani, dan menu keluar bersih. Memuat file sebagai modul tidak membuka menu. Exit code 0; source tidak berubah. README dan panduan setup diselaraskan. Belum ada commit, push, atau tes permanen.
+
+## Detail, transisi, dan riwayat di terminal, 12 November 2026
+
+Pembelajar menambahkan pilihan detail, perubahan status, dan riwayat berdasarkan ID kasus. Uji manual menghasilkan NEW ke OPEN yang sukses, lalu penolakan OPEN ke NEW dan OPEN ke CLOSED. Riwayat berisi CASE_CREATED dan satu STATUS_CHANGED, dengan alasan dari perubahan yang berhasil.
+
+Pendamping menjalankan pemeriksaan sementara melalui .venv\Scripts\python.exe -B - dengan input terarah. Pemeriksaan lulus untuk ID yang tidak ditemukan, tampilan detail, perubahan yang diizinkan, kedua transisi yang ditolak, status tujuan yang tidak dikenal, updated_at yang tetap setelah penolakan, dua event dengan alasan dan waktu yang sesuai, serta keluar dari menu. Source tidak berubah. README dan panduan setup diselaraskan. Perubahan masih lokal dan belum ada suite tes permanen.
+
+## Skema SQLite, 12 November 2026
+
+Pembelajar menambahkan storage.py dengan init_db, tabel cases dan case_events, serta foreign key case_events.case_id ke cases.case_id. Perintah `python -c "from storage import init_db; init_db()"` selesai tanpa output. Query katalog dari terminal menampilkan case_events dan cases.
+
+Pemeriksaan ulang dengan Python environment proyek membuka flowdesk.db dalam mode baca, mengonfirmasi kedua tabel dan foreign key, lalu menjalankan init_db dua kali pada file sementara. Contoh save_case untuk latihan berikutnya diuji terpisah pada file sementara: kedua baris tersedia setelah koneksi dibuka ulang, dan duplikasi ID event membuat insert kasus ikut dibatalkan. Contoh itu belum tersambung ke source menu. Langkah berikutnya adalah menghubungkan Create case.
+
+## Penyimpanan pembuatan kasus di SQLite, 13 November 2026
+
+Pembelajar menempatkan save_case pada pilihan Create case di dalam loop. Pemeriksaan baca saja terhadap flowdesk.db menemukan kasus dengan status NEW dan event CASE_CREATED yang terhubung melalui case_id. Sesi CLI baru masih menampilkan daftar kosong karena cases_by_id dibuat ulang saat mulai.
+
+Pemeriksaan sementara memakai Python dari .venv. Pada database sementara, CLI menyimpan kasus beserta event, dan ID event duplikat menyebabkan insert kasus ikut dibatalkan. Contoh load_cases diuji secara terpisah untuk daftar, detail, dan history setelah sesi baru. Source menu belum memanggil init_db atau load_cases. Dokumentasi mencatat tahap yang tersedia saat ini.
+
+## Pemuatan kasus dan riwayat saat CLI dibuka, 13 November 2026
+
+Python proyek dengan database sementara berhasil membuat kasus, membuka sesi baru, dan menemukan ID yang sama di daftar, detail, serta riwayat CASE_CREATED. Transisi NEW ke OPEN menghasilkan STATUS_CHANGED pada sesi aktif. Pembukaan ulang mengembalikan NEW dan CASE_CREATED. Pemeriksaan baca saja pada database lokal mengonfirmasi hal yang sama.
+
+Source masih memiliki definisi save_case yang tertimpa serta blok lama setelah return di load_cases. Contoh untuk langkah berikutnya memisahkan pembuatan kasus dari UPDATE status dan memakai satu transaksi untuk UPDATE dan insert event. Pemeriksaan contoh pada file sementara lulus untuk buka ulang, penolakan transisi ilegal, serta rollback saat insert event gagal. Contoh belum diterapkan ke source proyek.
+
+## Transaksi perubahan status, 13 November 2026
+
+Pembelajar menyambungkan opsi 4 ke save_status_change. Menu memvalidasi transisi pada salinan kasus, menjalankan UPDATE dan INSERT event dalam satu transaksi, lalu memperbarui dictionary setelah penyimpanan berhasil. Hasil manual setelah buka ulang dan pembacaan database lokal mengonfirmasi status OPEN, riwayat CASE_CREATED dan STATUS_CHANGED, alasan yang disimpan, serta updated_at yang sama dengan waktu event terakhir.
+
+Pemeriksaan sementara dengan Python proyek dan database terisolasi lulus untuk buka ulang, penolakan OPEN ke CLOSED, dan rollback ketika trigger tes menolak INSERT event. Menu aktif dan SQLite sama-sama mempertahankan status, updated_at, dan riwayat sebelum kegagalan. Pilihan angka menu yang tidak dikenal masih belum menampilkan pesan. Belum ada berkas tes permanen. Langkah berikutnya adalah memindahkan skenario inti ke pytest.
+
+## Tes otomatis pertama, 13 November 2026
+
+Pembelajar menambahkan test/test_storage.py dan menjalankan pytest -q dari environment proyek. Hasil yang dilaporkan adalah 1 passed. Verifikasi ulang dengan pytest melalui interpreter proyek dan cache pytest dimatikan juga meluluskan satu tes. Tes membuat kasus dan menyimpan perubahan NEW ke OPEN pada database sementara, lalu membaca kembali status, kedua event, dan alasan perubahan.
+
+Dua contoh untuk langkah berikutnya lulus saat dijalankan terpisah bersama tes yang sudah ada: OPEN ke CLOSED ditolak tanpa perubahan dictionary, dan ID event yang sengaja diduplikasi memicu rollback sehingga data yang dibaca kembali identik. Kedua contoh masih merupakan latihan, belum tersimpan sebagai bagian dari suite proyek.
+
+## Tes transisi ilegal dan rollback, 13 November 2026
+
+Pembelajar menambahkan tes penolakan OPEN ke CLOSED dan tes rollback ketika ID event sengaja dibuat duplikat. Pembelajar melaporkan 3 passed. Pemeriksaan ulang memakai pytest melalui Python proyek dengan cache dimatikan juga meluluskan ketiga tes.
+
+Uji menu dengan pilihan 9 dan 0 mengonfirmasi bahwa menu kembali tampil dan dapat keluar, tetapi belum menampilkan Invalid option. Contoh perubahan indentasi diuji terpisah pada database sementara dan menampilkan pesan dengan benar. Source menu masih membutuhkan perbaikan pembelajar.
+
+## Checkpoint CLI dan SQLite, 13 November 2026
+
+Pembelajar memperbaiki indentasi else pada menu. Input 9 menampilkan Invalid option. dan input 0 setelahnya menampilkan Goodbye! Tiga tes pytest lulus pada laporan pembelajar dan pemeriksaan ulang dengan interpreter proyek.
+
+Pemeriksaan CLI pada database sementara mencakup pilihan menu yang tidak dikenal, pembuatan kasus, transisi NEW ke OPEN, penolakan OPEN ke CLOSED, serta daftar, detail, dan dua event setelah dibuka ulang. Fungsi inti CLI dan SQLite terverifikasi. Tahap berikutnya adalah endpoint baca GET /cases. Belum ada source API atau pemasangan paket FastAPI di environment proyek pada saat pemeriksaan.
+
+## Endpoint daftar kasus, 13 November 2026
+
+Pembelajar menambahkan api.py, menjalankan Uvicorn, dan melihat 404 saat membuka /. Rute API terdaftar pada /cases. Pemeriksaan HTTP dengan Uvicorn pada port lokal sementara dan salinan database mengonfirmasi 200 untuk /cases dan /docs, serta 404 untuk / dan /favicon.ico. Respons /cases memuat ID, judul, dan status yang sama dengan kasus contoh CLI. README dan panduan setup mencatat URL dan perintah server. Langkah berikutnya adalah GET /cases/{case_id}.
+
+## Endpoint detail kasus, 13 November 2026
+
+Pembelajar menambahkan GET /cases/{case_id} di api.py. Pemeriksaan HTTP dengan Uvicorn pada port lokal dan database sementara mengonfirmasi 200 untuk daftar serta detail kasus yang ada dan 404 untuk ID yang tidak ada. Tiga tes pytest lulus saat diperiksa ulang sebelum publikasi. Langkah berikutnya adalah endpoint riwayat kasus.
