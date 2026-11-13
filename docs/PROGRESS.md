@@ -33,7 +33,7 @@ Catatan ini menyimpan konteks proyek yang diperlukan untuk melanjutkan belajar. 
 - `sys.prefix != sys.base_prefix` menghasilkan `True`.
 - Lokasi pip berada dalam `.venv\Lib\site-packages`.
 - Git tersedia: 2.37.3.windows.1.
-- Per 13 November 2026, FlowDesk memiliki ID otomatis, lookup di memori, aturan transisi, riwayat, timestamp UTC, dan menu CLI untuk membuat, mendaftar, melihat detail, mengubah status, melihat riwayat, dan keluar. Judul kosong ditolak tanpa penyimpanan. ID kasus, pilihan menu, dan status tujuan yang tidak dikenal ditangani. Menu menyimpan kasus dan event pembuatan ke SQLite. Saat mulai, menu memuat kasus dan riwayatnya dari SQLite. Perubahan status dan event-nya juga tersimpan dalam satu transaksi. API sudah menyediakan GET /cases dan GET /cases/{case_id}. Checkpoint sebelum pekerjaan CLI, SQLite, dan API adalah `574b28f`.
+- Per 13 November 2026, FlowDesk memiliki ID otomatis, lookup di memori, aturan transisi, riwayat, timestamp UTC, dan menu CLI untuk membuat, mendaftar, melihat detail, mengubah status, melihat riwayat, dan keluar. Judul kosong ditolak tanpa penyimpanan. ID kasus, pilihan menu, dan status tujuan yang tidak dikenal ditangani. Menu menyimpan kasus dan event pembuatan ke SQLite. Saat mulai, menu memuat kasus dan riwayatnya dari SQLite. Perubahan status dan event-nya juga tersimpan dalam satu transaksi. API menyediakan pembuatan, daftar, detail, riwayat, dan perubahan status kasus. Checkpoint sebelum pekerjaan CLI, SQLite, dan API adalah `574b28f`.
 
 ## Pemeriksaan aktual sesi setup
 
@@ -69,12 +69,12 @@ Git lokal telah diinisialisasi pada branch `main`. Pemeriksaan `git check-ignore
 
 ## Langkah belajar berikutnya
 
-Pembuatan kasus, pemuatan ulang, dan transaksi perubahan status sudah terverifikasi. Tiga tes pytest lulus untuk pemuatan ulang, transisi ilegal, dan rollback. Respons pilihan menu tidak dikenal sudah terverifikasi. GET /cases dan GET /cases/{case_id} sudah terverifikasi. Langkah berikutnya adalah GET /cases/{case_id}/history. Operasi tulis, tes API permanen, dan Postman menyusul.
+Implementasi, tes, koleksi Postman, dan dokumentasi untuk cakupan awal sudah selesai. Latihan penutup bagi pembelajar adalah mendemokan satu alur dan menjelaskan bagaimana request PATCH divalidasi, bagaimana status dan event disimpan bersama, dan mengapa transisi ilegal menghasilkan 409.
 
 ## Batasan saat ini
 
 - Tes otomatis mencakup pemuatan kembali status dan riwayat, penolakan transisi, dan rollback. Pilihan menu yang tidak dikenal menampilkan Invalid option. dan kembali ke menu.
-- Database SQLite sudah menyimpan pembuatan dan perubahan status beserta event-nya. API saat ini menyediakan daftar dan detail kasus. Riwayat lewat API, operasi tulis, tes API permanen, dan Postman masih tertunda.
+- Database SQLite sudah menyimpan pembuatan dan perubahan status beserta event-nya. Kelima endpoint API sudah terverifikasi. Suite berisi 15 tes dan koleksi Postman menjalankan 10 request dengan 19 pemeriksaan.
 - Setup menggunakan interpreter environment secara eksplisit. Aktivasi terminal belum diperlukan untuk menjalankan pemeriksaan.
 
 ## Revisi presentasi repository, 15 Oktober 2026
@@ -509,3 +509,21 @@ Pembelajar menambahkan api.py, menjalankan Uvicorn, dan melihat 404 saat membuka
 ## Endpoint detail kasus, 13 November 2026
 
 Pembelajar menambahkan GET /cases/{case_id} di api.py. Pemeriksaan HTTP dengan Uvicorn pada port lokal dan database sementara mengonfirmasi 200 untuk daftar serta detail kasus yang ada dan 404 untuk ID yang tidak ada. Tiga tes pytest lulus saat diperiksa ulang sebelum publikasi. Langkah berikutnya adalah endpoint riwayat kasus.
+
+## Endpoint riwayat kasus, 13 November 2026
+
+Rute GET /cases/{case_id}/history memakai ID dari URL dan mengembalikan event yang sudah diurutkan oleh load_cases. Pemeriksaan lewat antarmuka ASGI pada database sementara mengonfirmasi 200 untuk kasus yang ditemukan dan 404 untuk ID yang tidak ada. Contoh POST untuk latihan selanjutnya diuji terpisah dan mengembalikan 201 untuk data valid serta 422 untuk judul hilang atau kosong. Contoh POST belum masuk ke kode proyek.
+
+## Endpoint pembuatan kasus, 13 November 2026
+
+Pembelajar menjalankan POST /cases dari dokumentasi interaktif dan memperoleh 201. Pemeriksaan ulang di database sementara mengonfirmasi 201 dan CASE_CREATED untuk request valid, serta 422 tanpa kasus tambahan untuk judul kosong. Contoh PATCH diuji terpisah untuk perubahan valid dan respons 404, 409, dan 422. Contoh PATCH belum masuk ke kode proyek.
+
+## Endpoint perubahan status, 13 November 2026
+
+PATCH pada kasus contoh melalui server lokal mengembalikan 200 untuk OPEN ke IN_PROGRESS. Pemeriksaan GET detail dan riwayat memastikan waktu pembaruan sesuai dan tepat satu event STATUS_CHANGED baru tersimpan. Pemeriksaan terpisah pada database sementara memverifikasi kelima endpoint, respons 404, 409, dan 422, serta status dan riwayat yang tetap sama setelah penolakan. Tiga tes pytest yang sudah ada juga lulus. Berikutnya adalah menulis tes API yang bisa dijalankan ulang.
+
+## Verifikasi akhir FlowDesk, 13 November 2026
+
+Atas permintaan pembelajar, pendamping menulis test/test_api.py. TestClient menggunakan database sementara untuk memeriksa kelima endpoint, respons 200, 201, 404, 409, dan 422, serta status, waktu pembaruan, dan riwayat yang tetap sama setelah penolakan. Seluruh suite lulus dengan pytest -q -p no:cacheprovider -W error setelah memasang httpx2, dengan 15 tes lulus. Tiga tes sebelumnya mencakup penyimpanan ulang, transisi ilegal, dan rollback.
+
+Koleksi Postman JSON dijalankan dengan Postman CLI 1.88.0 pada Uvicorn lokal dan database sementara. Sepuluh request dan 19 pemeriksaan lulus. Pemeriksaan langsung SQLite mengonfirmasi satu kasus berstatus OPEN dengan CASE_CREATED dan STATUS_CHANGED. README dan SETUP berisi cara mengulang tes serta demo. Penjelasan alur dengan kata-kata pembelajar menjadi latihan penutup.

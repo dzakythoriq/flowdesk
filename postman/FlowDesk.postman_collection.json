@@ -1,0 +1,336 @@
+{
+  "info": {
+    "name": "FlowDesk API",
+    "description": "Run the requests in order against a local FlowDesk API. Each run creates a new fictional case.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "case_id",
+      "value": ""
+    },
+    {
+      "key": "opened_at",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Create a case",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/cases",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Review sample invoice\",\n  \"description\": \"Fictional Postman demo case\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"New case starts at NEW\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.case_id).to.match(/^CASE-/);",
+              "    pm.expect(body.status).to.eql('NEW');",
+              "    pm.collectionVariables.set('case_id', body.case_id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject a missing title",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/cases",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Fictional case without a title\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 422\", function () {",
+              "    pm.response.to.have.status(422);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List cases",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"The created case is listed\", function () {",
+              "    const caseId = pm.collectionVariables.get('case_id');",
+              "    pm.expect(pm.response.json().some(item => item.case_id === caseId)).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read case details",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases/{{case_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Details match the created case\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.case_id).to.eql(pm.collectionVariables.get('case_id'));",
+              "    pm.expect(body.title).to.eql('Review sample invoice');",
+              "    pm.expect(body.status).to.eql('NEW');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject an unknown case ID",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases/CASE-missing"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error explains the missing case\", function () {",
+              "    pm.expect(pm.response.json().detail).to.eql('Case not found');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read initial history",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases/{{case_id}}/history"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"History contains only CASE_CREATED\", function () {",
+              "    pm.expect(pm.response.json().map(event => event.event_type)).to.eql(['CASE_CREATED']);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Open the case",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/cases/{{case_id}}/status",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_status\": \"OPEN\",\n  \"reason\": \"Ready for review\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"The case is now OPEN\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.case_id).to.eql(pm.collectionVariables.get('case_id'));",
+              "    pm.expect(body.status).to.eql('OPEN');",
+              "    pm.collectionVariables.set('opened_at', body.updated_at);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject OPEN to CLOSED",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/cases/{{case_id}}/status",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_status\": \"CLOSED\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test(\"Error identifies the blocked transition\", function () {",
+              "    pm.expect(pm.response.json().detail).to.eql('Cannot move from OPEN to CLOSED');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Check state after rejection",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases/{{case_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Status and update time stay the same\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('OPEN');",
+              "    pm.expect(body.updated_at).to.eql(pm.collectionVariables.get('opened_at'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read final history",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/cases/{{case_id}}/history"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"History records only the successful transition\", function () {",
+              "    const events = pm.response.json();",
+              "    pm.expect(events.map(event => event.event_type)).to.eql(['CASE_CREATED', 'STATUS_CHANGED']);",
+              "    pm.expect(events[1].old_status).to.eql('NEW');",
+              "    pm.expect(events[1].new_status).to.eql('OPEN');",
+              "    pm.expect(events[1].reason).to.eql('Ready for review');",
+              "    pm.expect(events[1].created_at).to.eql(pm.collectionVariables.get('opened_at'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

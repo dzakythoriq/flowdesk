@@ -118,18 +118,28 @@ Dari root proyek, pasang paket API di environment proyek dan jalankan server:
 .\.venv\Scripts\python.exe -m uvicorn api:app --reload
 ```
 
-Biarkan server berjalan dan buka [daftar kasus](http://127.0.0.1:8000/cases) atau [dokumentasi interaktif](http://127.0.0.1:8000/docs). Gunakan `GET /cases/{case_id}` dengan ID dari daftar untuk melihat detail. Tekan Ctrl+C di terminal server untuk berhenti.
+Biarkan server berjalan dan buka [daftar kasus](http://127.0.0.1:8000/cases) atau [dokumentasi interaktif](http://127.0.0.1:8000/docs). Gunakan `GET /cases/{case_id}` dengan ID dari daftar untuk melihat detail atau `GET /cases/{case_id}/history` untuk membaca riwayat. Gunakan `POST /cases` di dokumentasi interaktif untuk membuat kasus dengan judul dan deskripsi opsional. Gunakan `PATCH /cases/{case_id}/status` dengan `new_status` dan `reason` opsional untuk mengubah status. Tekan Ctrl+C di terminal server untuk berhenti.
 
 ## Menjalankan tes
 
-Pasang pytest di environment proyek sekali, lalu jalankan tes dari root proyek:
+Pasang paket API dan tes di environment proyek, lalu jalankan tes dari root proyek:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install pytest
+.\.venv\Scripts\python.exe -m pip install fastapi uvicorn pytest httpx2
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Tes penyimpanan menggunakan database sementara yang disiapkan oleh pytest.
+Tes penyimpanan dan API memakai database SQLite sementara. Tes API mengirim request lewat TestClient.
+
+## Menjalankan koleksi Postman
+
+Jalankan API lokal, lalu impor [koleksi FlowDesk](../postman/FlowDesk.postman_collection.json) ke Postman. Jalankan request sesuai urutan. Koleksi mengambil ID dari respons pembuatan kasus dan memakainya untuk detail, perubahan status, dan riwayat. Setiap run membuat satu kasus fiktif baru.
+
+Jika memakai Postman CLI, jalankan perintah ini dari root proyek.
+
+```powershell
+postman collection run ./postman/FlowDesk.postman_collection.json
+```
 
 ## Dokumentasi setelah milestone
 

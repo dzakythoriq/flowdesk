@@ -4,13 +4,9 @@
 
 FlowDesk is designed to track cases through explicit status transitions, automatically generated identifiers, and a traceable event history. Its core focus is keeping each case's current state consistent with its recorded changes.
 
-## Development Status
+## Capabilities
 
-**Early development.** `create_case(title, description="")` requires a string title, raising `TypeError` for other types. It trims leading and trailing whitespace and rejects a blank result with `ValueError`. The description is optional and defaults to an empty string. When supplied, it must be a string. Valid input produces an independent in-memory case dictionary with a generated `CASE-` prefixed UUIDv4, the normalized title, the supplied description, and an initial status of `NEW`. The script supports status display and retrieval and validates transitions against the workflow table below. `transition_case(case_data, new_status)` returns `True` after an allowed update and `False` when the attempt is rejected, leaving the case unchanged. `open_case(case_data)` delegates to that function with `OPEN` as the target. Each case records UTC creation and update timestamps and an in-memory history of creation and successful status changes. The terminal menu supports creating and listing cases, retrieving case details, changing status, and viewing event history. Details, status changes, and history are accessed by case ID. Case creation saves the case and its initial event together in SQLite. The terminal menu loads saved cases and their event history from SQLite at startup. Successful status changes and their events are also persisted together. The read-only API provides a case list and case details from the same SQLite database.
-
-## Planned Capabilities
-
-- Add case history and write operations to the API.
+`create_case(title, description="")` requires a string title, raising `TypeError` for other types. It trims leading and trailing whitespace and rejects a blank result with `ValueError`. The description is optional and defaults to an empty string. When supplied, it must be a string. Valid input produces an independent in-memory case dictionary with a generated `CASE-` prefixed UUIDv4, the normalized title, the supplied description, and an initial status of `NEW`. The script supports status display and retrieval and validates transitions against the workflow table below. `transition_case(case_data, new_status)` returns `True` after an allowed update and `False` when the attempt is rejected, leaving the case unchanged. `open_case(case_data)` delegates to that function with `OPEN` as the target. Each case records UTC creation and update timestamps and an in-memory history of creation and successful status changes. The terminal menu supports creating and listing cases, retrieving case details, changing status, and viewing event history. Details, status changes, and history are accessed by case ID. Case creation saves the case and its initial event together in SQLite. The terminal menu loads saved cases and their event history from SQLite at startup. Successful status changes and their events are also persisted together. The API creates cases, retrieves case lists, details, and event history, and applies status changes using the same SQLite database.
 
 A typical workflow starts with an operator creating a case such as `Review sample invoice`, opening it, starting work, and eventually resolving and closing it. Work can move to `BLOCKED` when an issue prevents progress, then return to `IN_PROGRESS` once the issue is cleared. All sample cases use fictional data.
 
@@ -36,7 +32,7 @@ A rejected transition leaves the case's status, `updated_at`, and event history 
 
 ## Data Model
 
-| Entity | Planned fields |
+| Entity | Fields |
 |---|---|
 | `Case` | `case_id`, `title`, `description`, `status`, `created_at`, `updated_at` |
 | `CaseEvent` | `event_id`, `case_id`, `event_type`, `old_status`, `new_status`, `reason`, `created_at` |
@@ -49,8 +45,8 @@ A rejected transition leaves the case's status, `updated_at`, and event history 
 |---|---|---|
 | Runtime | Python 3.14 | Environment configured |
 | Persistence | SQLite via `sqlite3` | Implemented for case creation, status changes, and history |
-| API | FastAPI | Case listing and details implemented |
-| Automated testing | pytest | Persistence, transition validation, and rollback covered |
+| API | FastAPI | Case creation, listing, details, history, and status changes implemented |
+| Automated testing | pytest and FastAPI TestClient | Workflow, persistence, rollback, and HTTP responses covered |
 
 ## Setup
 
@@ -90,18 +86,28 @@ Created: CASE-<uuid>
 .\.venv\Scripts\python.exe -m uvicorn api:app --reload
 ```
 
-Open [the case list](http://127.0.0.1:8000/cases) to retrieve each case's ID, title, and current status. Request `GET /cases/{case_id}` for one case's details, including its description and timestamps. An unknown ID returns `404 Not Found`. Both endpoints are available in the [interactive API documentation](http://127.0.0.1:8000/docs).
+Open [the case list](http://127.0.0.1:8000/cases) to retrieve each case's ID, title, and current status. Request `GET /cases/{case_id}` for one case's details, including its description and timestamps. Request `GET /cases/{case_id}/history` for the case's chronological event history. An unknown ID returns `404 Not Found`. Use `POST /cases` with a required title and an optional description to create a case. A successful request returns `201 Created`. Use `PATCH /cases/{case_id}/status` with a required `new_status` and optional `reason`. A successful transition returns `200 OK`. An unknown status returns `422`, and a disallowed transition returns `409 Conflict`. The endpoints are available in the [interactive API documentation](http://127.0.0.1:8000/docs).
 
 ## Tests
 
-Install pytest in the project environment and run the tests from the repository root:
+Install the API and test dependencies in the project environment, then run the suite from the repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install pytest
+.\.venv\Scripts\python.exe -m pip install fastapi uvicorn pytest httpx2
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The tests cover reloading a saved status and its event history, rejecting an invalid transition, and rolling back a status update when its event cannot be saved. The persistence tests use temporary SQLite databases.
+The suite includes 3 storage and workflow checks and 12 API checks. API tests use FastAPI's TestClient and temporary SQLite databases. They cover case creation, listing, details, history, status changes, and responses for invalid requests, missing cases, and disallowed transitions.
+
+## Postman demo
+
+Import the [FlowDesk collection](postman/FlowDesk.postman_collection.json) into Postman and run it in order against the local API. It creates a fictional case, uses the returned ID in later requests, opens the case, and verifies that an invalid transition leaves the status and history intact. Each run creates a new sample case.
+
+With Postman CLI installed and the API running locally, run the collection from the repository root.
+
+```powershell
+postman collection run ./postman/FlowDesk.postman_collection.json
+```
 
 ## Scope
 
